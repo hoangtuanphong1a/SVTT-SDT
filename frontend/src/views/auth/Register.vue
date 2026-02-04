@@ -35,10 +35,9 @@ const register = async () => {
 
   try {
     const response = await api.post("/auth/register", {
-      fullName: fullName.value,
       email: email.value,
       password: password.value,
-      role: role.value,
+      displayName: fullName.value,
     });
 
     success.value = true;
@@ -145,12 +144,6 @@ const register = async () => {
               </button>
             </div>
 
-            <div class="form-group">
-              <select v-model="role">
-                <option value="jobseeker">👤 Người tìm việc</option>
-                <option value="employer">🏢 Nhà tuyển dụng</option>
-              </select>
-            </div>
 
             <div v-if="error" class="error-message">
               {{ error }}

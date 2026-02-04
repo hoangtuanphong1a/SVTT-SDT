@@ -1,213 +1,260 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
+import Login from '@/views/auth/Login.vue'
+import Register from '@/views/auth/Register.vue'
+import JobList from '@/views/JobList.vue'
+import JobDetail from '@/views/JobDetail.vue'
+import CompanyList from '@/views/CompanyList.vue'
+import CompanyDetail from '@/views/CompanyDetail.vue'
+import Blog from '@/views/Blog.vue'
+import BlogDetail from '@/views/BlogDetail.vue'
+import CVBuilder from '@/views/CVBuilder.vue'
+import CVEditor from '@/views/CVEditor.vue'
+import CVTemplate from '@/views/CVTemplate.vue'
+import InterviewPrep from '@/views/InterviewPrep.vue'
+import JobAlerts from '@/views/JobAlerts.vue'
+import Contact from '@/views/Contact.vue'
+import About from '@/views/About.vue'
+import Analytics from '@/views/admin/Analytics.vue'
+import Dashboard from '@/views/admin/Dashboard.vue'
+import Users from '@/views/admin/Users.vue'
+import Jobs from '@/views/admin/Jobs.vue'
+import Companies from '@/views/admin/Companies.vue'
+import BlogAdmin from '@/views/admin/Blog.vue'
+import EmployerDashboard from '@/views/employer/Dashboard.vue'
+import EmployerProfile from '@/views/employer/Profile.vue'
+import EmployerJobs from '@/views/employer/Jobs.vue'
+import EmployerJobCreate from '@/views/employer/JobCreate.vue'
+import EmployerJobEdit from '@/views/employer/JobEdit.vue'
+import EmployerCandidates from '@/views/employer/Candidates.vue'
+import EmployerCVSearch from '@/views/employer/CVSearch.vue'
+import EmployerSubscription from '@/views/employer/Subscription.vue'
+import JobseekerDashboard from '@/views/jobseeker/Dashboard.vue'
+import JobseekerProfile from '@/views/jobseeker/Profile.vue'
+import JobseekerApplications from '@/views/jobseeker/Applications.vue'
+import JobseekerSavedJobs from '@/views/jobseeker/SavedJobs.vue'
+import JobseekerMessages from '@/views/jobseeker/Messages.vue'
+import JobseekerCVList from '@/views/jobseeker/CVList.vue'
+import JobseekerCVCreate from '@/views/jobseeker/CVCreate.vue'
+import JobseekerCVEdit from '@/views/jobseeker/CVEdit.vue'
 
-// Public routes
-const publicRoutes = [
+const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home.vue')
-  },
-  {
-    path: '/jobs',
-    name: 'JobList',
-    component: () => import('../views/JobList.vue')
-  },
-  {
-    path: '/jobs/:id',
-    name: 'JobDetail',
-    component: () => import('../views/JobDetail.vue')
-  },
-  {
-    path: '/companies',
-    name: 'CompanyList',
-    component: () => import('../views/CompanyList.vue')
-  },
-  {
-    path: '/companies/:id',
-    name: 'CompanyDetail',
-    component: () => import('../views/CompanyDetail.vue')
-  },
-  {
-    path: '/blog',
-    name: 'Blog',
-    component: () => import('../views/Blog.vue')
-  },
-  {
-    path: '/blog/:id',
-    name: 'BlogDetail',
-    component: () => import('../views/BlogDetail.vue')
+    component: Home
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/auth/Login.vue')
+    component: Login
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('../views/auth/Register.vue')
-  }
-]
-
-// Job Seeker routes
-const jobSeekerRoutes = [
-  {
-    path: '/dashboard',
-    name: 'JobSeekerDashboard',
-    component: () => import('../views/jobseeker/Dashboard.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    component: Register
   },
   {
-    path: '/profile',
-    name: 'JobSeekerProfile',
-    component: () => import('../views/jobseeker/Profile.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/jobs',
+    name: 'JobList',
+    component: JobList
   },
   {
-    path: '/cv',
-    name: 'CVList',
-    component: () => import('../views/jobseeker/CVList.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/jobs/:id',
+    name: 'JobDetail',
+    component: JobDetail
   },
   {
-    path: '/cv/create',
-    name: 'CVCreate',
-    component: () => import('../views/jobseeker/CVCreate.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/companies',
+    name: 'CompanyList',
+    component: CompanyList
   },
   {
-    path: '/cv/:id/edit',
-    name: 'CVEdit',
-    component: () => import('../views/jobseeker/CVEdit.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/companies/:id',
+    name: 'CompanyDetail',
+    component: CompanyDetail
   },
   {
-    path: '/applications',
-    name: 'Applications',
-    component: () => import('../views/jobseeker/Applications.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/blog',
+    name: 'Blog',
+    component: Blog
   },
   {
-    path: '/saved-jobs',
-    name: 'SavedJobs',
-    component: () => import('../views/jobseeker/SavedJobs.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
+    path: '/blog/:id',
+    name: 'BlogDetail',
+    component: BlogDetail
   },
   {
-    path: '/messages',
-    name: 'Messages',
-    component: () => import('../views/jobseeker/Messages.vue'),
-    meta: { requiresAuth: true, role: 'jobseeker' }
-  }
-]
-
-// Employer routes
-const employerRoutes = [
-  {
-    path: '/employer/dashboard',
-    name: 'EmployerDashboard',
-    component: () => import('../views/employer/Dashboard.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/cv-builder',
+    name: 'CVBuilder',
+    component: CVBuilder
   },
   {
-    path: '/employer/company',
-    name: 'EmployerCompany',
-    component: () => import('../views/employer/Company.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/cv-editor',
+    name: 'CVEditor',
+    component: CVEditor
   },
   {
-    path: '/employer/profile',
-    name: 'EmployerProfile',
-    component: () => import('../views/employer/Profile.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/cv-templates',
+    name: 'CVTemplate',
+    component: CVTemplate
   },
   {
-    path: '/employer/jobs',
-    name: 'EmployerJobs',
-    component: () => import('../views/employer/Jobs.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/interview-prep',
+    name: 'InterviewPrep',
+    component: InterviewPrep
   },
   {
-    path: '/employer/jobs/create',
-    name: 'JobCreate',
-    component: () => import('../views/employer/JobCreate.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/job-alerts',
+    name: 'JobAlerts',
+    component: JobAlerts
   },
   {
-    path: '/employer/jobs/:id/edit',
-    name: 'JobEdit',
-    component: () => import('../views/employer/JobEdit.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/contact',
+    name: 'Contact',
+    component: Contact
   },
   {
-    path: '/employer/candidates',
-    name: 'Candidates',
-    component: () => import('../views/employer/Candidates.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
+    path: '/about',
+    name: 'About',
+    component: About
   },
   {
-    path: '/employer/cv-search',
-    name: 'CVSearch',
-    component: () => import('../views/employer/CVSearch.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
-  },
-  {
-    path: '/employer/subscription',
-    name: 'Subscription',
-    component: () => import('../views/employer/Subscription.vue'),
-    meta: { requiresAuth: true, role: 'employer' }
-  }
-]
-
-// Admin routes
-const adminRoutes = [
-  {
-    path: '/admin',
+    path: '/admin/dashboard',
     name: 'AdminDashboard',
-    component: () => import('../views/admin/Dashboard.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
-  },
-  {
-    path: '/admin/users',
-    name: 'AdminUsers',
-    component: () => import('../views/admin/Users.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
-  },
-  {
-    path: '/admin/companies',
-    name: 'AdminCompanies',
-    component: () => import('../views/admin/Companies.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
-  },
-  {
-    path: '/admin/jobs',
-    name: 'AdminJobs',
-    component: () => import('../views/admin/Jobs.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
-  },
-  {
-    path: '/admin/blog',
-    name: 'AdminBlog',
-    component: () => import('../views/admin/Blog.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
+    component: Dashboard,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
   },
   {
     path: '/admin/analytics',
     name: 'AdminAnalytics',
-    component: () => import('../views/admin/Analytics.vue'),
-    meta: { requiresAuth: true, role: 'admin' }
-  }
-]
-
-const routes = [
-  ...publicRoutes,
-  ...jobSeekerRoutes,
-  ...employerRoutes,
-  ...adminRoutes,
+    component: Analytics,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: Users,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/admin/jobs',
+    name: 'AdminJobs',
+    component: Jobs,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/admin/companies',
+    name: 'AdminCompanies',
+    component: Companies,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/admin/blog',
+    name: 'AdminBlog',
+    component: BlogAdmin,
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/employer/dashboard',
+    name: 'EmployerDashboard',
+    component: EmployerDashboard,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/profile',
+    name: 'EmployerProfile',
+    component: EmployerProfile,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs',
+    name: 'EmployerJobs',
+    component: EmployerJobs,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs/create',
+    name: 'EmployerJobCreate',
+    component: EmployerJobCreate,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs/:id/edit',
+    name: 'EmployerJobEdit',
+    component: EmployerJobEdit,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/candidates',
+    name: 'EmployerCandidates',
+    component: EmployerCandidates,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/cv-search',
+    name: 'EmployerCVSearch',
+    component: EmployerCVSearch,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/subscription',
+    name: 'EmployerSubscription',
+    component: EmployerSubscription,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/jobseeker/dashboard',
+    name: 'JobseekerDashboard',
+    component: JobseekerDashboard,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/profile',
+    name: 'JobseekerProfile',
+    component: JobseekerProfile,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/applications',
+    name: 'JobseekerApplications',
+    component: JobseekerApplications,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/saved-jobs',
+    name: 'JobseekerSavedJobs',
+    component: JobseekerSavedJobs,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/messages',
+    name: 'JobseekerMessages',
+    component: JobseekerMessages,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/cv-list',
+    name: 'JobseekerCVList',
+    component: JobseekerCVList,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/cv/create',
+    name: 'JobseekerCVCreate',
+    component: JobseekerCVCreate,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/jobseeker/cv/:id/edit',
+    name: 'JobseekerCVEdit',
+    component: JobseekerCVEdit,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue')
+    component: () => import('@/views/NotFound.vue')
   }
 ]
 
@@ -216,19 +263,16 @@ const router = createRouter({
   routes
 })
 
-// Navigation guards
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token')
-  const userRole = localStorage.getItem('role')
+  const requiresAuth = to.meta.requiresAuth
+  const requiresRole = to.meta.requiresRole
 
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!isAuthenticated) {
-      next({
-        name: 'Login',
-        query: { redirect: to.fullPath }
-      })
-    } else if (to.meta.role && to.meta.role !== userRole) {
-      next({ name: 'Home' })
+  if (requiresAuth) {
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (!user) {
+      next('/login')
+    } else if (requiresRole && user.role !== requiresRole) {
+      next('/unauthorized')
     } else {
       next()
     }

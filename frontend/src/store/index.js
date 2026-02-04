@@ -1,43 +1,104 @@
-import { reactive } from 'vue'
+import { createStore } from 'vuex'
+import api from '@/services/api'
 
-export const store = reactive({
-  // User state
-  user: null,
-  isAuthenticated: false,
-  
-  // Job state
-  jobs: [],
-  companies: [],
-  
-  // UI state
-  isLoading: false,
-  notifications: [],
-  
-  // Actions
-  setUser(user) {
-    this.user = user
-    this.isAuthenticated = !!user
+export default createStore({
+  state: {
+    user: null,
+    token: localStorage.getItem('token') || null,
+    loading: false,
+    error: null
   },
-  
-  logout() {
-    this.user = null
-    this.isAuthenticated = false
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
+  mutations: {
+    SET_USER(state, user) {
+      state.user = user
+      localStorage.setItem('user', JSON.stringify(user))
+    },
+    SET_TOKEN(state, token) {
+      state.token = token
+      localStorage.setItem('token', token)
+    },
+    REMOVE_USER(state) {
+      state.user = null
+      localStorage.removeItem('user')
+    },
+    REMOVE_TOKEN(state) {
+      state.token = null
+      localStorage.removeItem('token')
+    },
+    SET_LOADING(state, loading) {
+      state.loading = loading
+    },
+    SET_ERROR(state, error) {
+      state.error = error
+    }
   },
-  
-  setLoading(loading) {
-    this.isLoading = loading
+  actions: {
+    async login({ commit }, credentials) {
+      try {
+        commit('SET_LOADING', true)
+        const response = await api.post('/auth/login', credentials)
+        const { token, user } = response.data
+        commit('SET_TOKEN', token)
+        commit('SET_USER', user)
+        return user
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data || 'Login failed')
+        throw error
+      } finally {
+        commit('SET_LOADING', false)
+      }
+    },
+    async register({ commit }, userData) {
+      try {
+        commit('SET_LOADING', true)
+        const response = await api.post('/auth/register', userData)
+        const { token, user } = response.data
+        commit('SET_TOKEN', token)
+        commit('SET_USER', user)
+        return user
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data || 'Registration failed')
+        throw error
+      } finally {
+        commit('SET_LOADING', false)
+      }
+    },
+    logout({ commit }) {
+      commit('REMOVE_TOKEN')
+      commit('REMOVE_USER')
+    },
+    async getCurrentUser({ commit }) {
+      try {
+        commit('SET_LOADING', true)
+        const response = await api.get('/auth/profile')
+        commit('SET_USER', response.data)
+        return response.data
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data || 'Failed to fetch user')
+        throw error
+      } finally {
+        commit('SET_LOADING', false)
+      }
+    },
+    async updateProfile({ commit }, profileData) {
+      try {
+        commit('SET_LOADING', true)
+        const response = await api.put('/auth/profile', profileData)
+        commit('SET_USER', response.data)
+        return response.data
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data || 'Failed to update profile')
+        throw error
+      } finally {
+        commit('SET_LOADING', false)
+      }
+    }
   },
-  
-  addNotification(notification) {
-    this.notifications.push({
-      ...notification,
-      id: Date.now()
-    })
-  },
-  
-  removeNotification(id) {
-    this.notifications = this.notifications.filter(n => n.id !== id)
+  getters: {
+    isAuthenticated: (state) => !!state.user,
+    getUser: (state) => state.user,
+    getToken: (state) => state.token,
+    isLoading: (state) => state.loading,
+    getError: (state) => state.error
   }
 })

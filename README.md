@@ -1,263 +1,276 @@
-# HỆ THỐNG QUẢN LÝ TUYỂN DỤNG
+# Job Portal System
 
-## 📋 GIỚI THIỆU CHUNG
+A comprehensive job portal system built with modern technologies including Java Spring Boot for backend, Vue.js for frontend, and MySQL for database. The system includes AI-powered features for CV analysis, matching, and chatbot functionality.
 
-Hệ thống quản lý tuyển dụng là một giải pháp toàn diện giúp doanh nghiệp quản lý toàn bộ quy trình tuyển dụng từ đăng tin tuyển dụng, tiếp nhận CV, sắp xếp phỏng vấn đến đánh giá và theo dõi kết quả tuyển dụng.
+## Technology Stack
 
-## 🎯 KIẾN TRÚC HỆ THỐNG
+### Backend
+- **Java 17** - Programming language
+- **Spring Boot 3.2.0** - Web framework
+- **Spring Security** - Authentication and authorization
+- **JWT** - Token-based authentication
+- **MySQL 8.0** - Database
+- **Maven** - Build tool
+- **Docker** - Containerization
+
+### Frontend
+- **Vue.js 3.3.4** - JavaScript framework
+- **Vue Router 4.2.5** - Routing
+- **Vuex 4.1.0** - State management
+- **Element Plus** - UI components
+- **Vite 5.0.8** - Build tool
+- **TypeScript** - Type safety
+
+### AI/ML Services
+- **TensorFlow 2.15.0** - Machine learning
+- **Deeplearning4j 1.0.0-M2.1** - Deep learning
+- **ND4J 1.0.0-M2.1** - Numerical computing
+
+## Features
+
+### Core Features
+- User authentication (JWT)
+- Job posting and management
+- CV creation and editing
+- Company profiles
+- Job search and filtering
+- Application tracking
+- Blog system
+- Notification system
+- Messaging system
+
+### AI-Powered Features
+- CV analysis and parsing
+- CV-Job matching algorithm
+- AI chatbot for support
+- Resume optimization suggestions
+
+### Admin Features
+- User management
+- Job management
+- Company management
+- Analytics dashboard
+- Blog management
+
+## Project Structure
 
 ```
-Recruitment-System/
-├── backend/                  # Backend microservices (5 dịch vụ)
-│   ├── api-gateway/          # Cổng API với xác thực JWT
-│   └── services/             # Các microservice
-│       ├── auth-service/     # ✅ Dịch vụ xác thực hoàn chỉnh
-│       ├── job-service/      # Dịch vụ quản lý việc làm
-│       ├── candidate-service/# Dịch vụ quản lý ứng viên
-│       ├── interview-service/# Dịch vụ quản lý phỏng vấn
-│       └── notification-service/# Dịch vụ thông báo
-├── frontend/                 # Frontend VueJS 3
-│   ├── public/               # Tài nguyên tĩnh
-│   └── src/                  # Mã nguồn
-│       ├── assets/           # Tài nguyên
-│       ├── components/       # Các component
-│       ├── router/           # Định tuyến
-│       ├── services/         # Các service API
-│       ├── store/            # Quản lý trạng thái
-│       ├── utils/            # Tiện ích
-│       └── views/            # Các trang
-├── docker/                   # Cấu hình Docker
-│   └── docker-compose.dev.yml # Môi trường phát triển
-├── docs/                     # Tài liệu
-│   ├── database-schema.sql   # Schema cơ sở dữ liệu
-│   └── database-summary.md   # Phân tích cơ sở dữ liệu
-└── README.md                 # Tài liệu dự án
+JV/
+├── backend/                 # Spring Boot backend
+│   ├── src/main/java/com/jobportal/
+│   │   ├── config/         # Security and JWT configuration
+│   │   ├── controller/     # REST controllers
+│   │   ├── entity/         # JPA entities
+│   │   ├── repository/     # Data access layer
+│   │   ├── service/        # Business logic
+│   │   └── util/           # Utility classes
+│   ├── src/main/resources/ # Configuration files
+│   └── pom.xml             # Maven dependencies
+├── frontend/               # Vue.js frontend
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── views/         # Page components
+│   │   ├── router/        # Route configuration
+│   │   ├── store/         # Vuex store
+│   │   ├── services/      # API services
+│   │   └── assets/        # Static assets
+│   ├── public/            # Public files
+│   └── package.json       # Frontend dependencies
+├── docker-compose.yml     # Docker configuration
+└── README.md              # This file
 ```
 
-## 🚀 HƯỚNG DẪN TRIỂN KHAI
+## Getting Started
 
-### 1. Yêu Cầu Hệ Thống
-
-**Phần mềm cần cài đặt:**
+### Prerequisites
 - Java 17+
 - Node.js 18+
-- Docker
-- PostgreSQL
-- Maven
+- MySQL 8.0+
+- Docker (optional)
 
-**Công cụ phát triển:**
-- IDE: IntelliJ IDEA hoặc VS Code
-- Postman (cho kiểm thử API)
-- Docker Desktop (cho quản lý container)
+### Installation
 
-### 2. Cài Đặt Môi Trường Phát Triển
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/hoangtuanphong1a/SVTT-SDT.git
+   cd JV
+   ```
 
-#### Cài đặt backend (Spring Boot)
+2. **Set up the database:**
+   ```bash
+   # Create database
+   mysql -u root -p -e "CREATE DATABASE jobportal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   
+   # Create user
+   mysql -u root -p -e "CREATE USER 'jobportal'@'localhost' IDENTIFIED BY 'jobportal123';"
+   mysql -u root -p -e "GRANT ALL PRIVILEGES ON jobportal.* TO 'jobportal'@'localhost';"
+   ```
 
+3. **Build and run the backend:**
+   ```bash
+   cd backend
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+4. **Install and run the frontend:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+5. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080
+
+### Using Docker
+
+1. **Build and run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080
+   - MySQL: localhost:3306
+
+## API Documentation
+
+The backend provides RESTful APIs for all operations. Key endpoints include:
+
+- **Authentication:**
+  - `POST /api/auth/login` - User login
+  - `POST /api/auth/register` - User registration
+  - `GET /api/auth/profile` - Get user profile
+
+- **Jobs:**
+  - `GET /api/jobs` - Get all jobs
+  - `GET /api/jobs/{id}` - Get job by ID
+  - `POST /api/jobs` - Create job (Employer/Admin)
+  - `PUT /api/jobs/{id}` - Update job (Employer/Admin)
+  - `DELETE /api/jobs/{id}` - Delete job (Employer/Admin)
+
+- **Companies:**
+  - `GET /api/companies` - Get all companies
+  - `GET /api/companies/{id}` - Get company by ID
+
+- **CVs:**
+  - `GET /api/cvs` - Get all CVs
+  - `POST /api/cvs` - Create CV
+  - `PUT /api/cvs/{id}` - Update CV
+
+## Configuration
+
+### Backend Configuration
+Edit `backend/src/main/resources/application.properties`:
+
+```properties
+# Database Configuration
+spring.datasource.url=jdbc:mysql://localhost:3306/jobportal
+spring.datasource.username=jobportal
+spring.datasource.password=jobportal123
+
+# JWT Configuration
+jwt.secret=your-secret-key
+jwt.expiration=604800000
+
+# Server Configuration
+server.port=8080
+```
+
+### Frontend Configuration
+Edit `frontend/.env`:
+
+```env
+VUE_APP_API_URL=http://localhost:8080/api
+```
+
+## AI/ML Services
+
+The system includes AI-powered features for:
+
+1. **CV Analysis:** Parses and extracts information from resumes
+2. **CV-Job Matching:** Matches candidates with suitable job openings
+3. **Chatbot:** Provides automated support and assistance
+
+These services use TensorFlow and Deeplearning4j for machine learning capabilities.
+
+## Security
+
+The application uses JWT-based authentication with role-based access control:
+
+- **ADMIN:** Full system access
+- **EMPLOYER:** Job posting and candidate management
+- **JOBSEEKER:** Job search and application
+
+## Development
+
+### Backend Development
 ```bash
-# Di chuyển vào thư mục auth-service
-cd Recruitment-System/backend/services/auth-service
-
-# Cài đặt dependencies và build
-mvn clean install
-
-# Chạy dịch vụ
+cd backend
 mvn spring-boot:run
 ```
 
-Dịch vụ sẽ chạy tại: `http://localhost:8081`
-
-#### Cài đặt frontend (VueJS)
-
+### Frontend Development
 ```bash
-# Di chuyển vào thư mục frontend
-cd Recruitment-System/frontend
-
-# Cài đặt dependencies
-npm install
-
-# Chạy frontend
+cd frontend
 npm run dev
 ```
 
-Frontend sẽ chạy tại: `http://localhost:3000`
-
-#### Chạy toàn bộ hệ thống với Docker
-
+### Testing
 ```bash
-# Di chuyển vào thư mục gốc
-cd Recruitment-System
-
-# Build và chạy tất cả dịch vụ
-docker-compose -f docker-compose.dev.yml up --build
-```
-
-### 3. Truy Cập Các Dịch Vụ
-
-Sau khi chạy thành công, bạn có thể truy cập:
-
-- **Frontend**: `http://localhost:3000`
-- **Auth Service**: `http://localhost:8081`
-- **Swagger UI**: `http://localhost:8081/swagger-ui.html`
-- **API Gateway**: `http://localhost:8080`
-- **API Docs**: `http://localhost:8081/v3/api-docs`
-
-### 4. Cấu Hình Cơ Sở Dữ Liệu
-
-Hệ thống sử dụng PostgreSQL với cấu hình mặc định:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/recruitment_db
-    username: recruitment
-    password: recruitment123
-```
-
-Bạn có thể thay đổi cấu hình trong file `application.yml` của mỗi dịch vụ.
-
-### 5. Xác Thực và Bảo Mật
-
-Hệ thống sử dụng JWT (JSON Web Token) cho xác thực:
-
-- **Token expiration**: 24 giờ
-- **Refresh token expiration**: 7 ngày
-- **Bảo mật mật khẩu**: BCrypt
-- **Phân quyền**: Role-based (JobSeeker, Employer, Admin)
-
-## 🔧 HƯỚNG DẪN PHÁT TRIỂN
-
-### 1. Cấu Trúc Dự Án
-
-**Backend (Spring Boot):**
-- Mỗi dịch vụ là một module độc lập
-- Sử dụng Spring Data JPA cho truy cập cơ sở dữ liệu
-- Spring Security cho bảo mật
-- Swagger cho tài liệu API
-
-**Frontend (VueJS):**
-- Sử dụng Vue 3 với Composition API
-- Pinia cho quản lý trạng thái
-- Vue Router cho định tuyến
-- Vuetify cho giao diện người dùng
-- Axios cho gọi API
-
-### 2. Quy Trình Làm Việc
-
-1. **Tạo nhánh mới** cho tính năng:
-```bash
-git checkout -b feature/[tên-tính-năng]
-```
-
-2. **Phát triển tính năng** theo yêu cầu
-
-3. **Kiểm thử** tính năng:
-```bash
-# Backend
+# Backend tests
+cd backend
 mvn test
 
-# Frontend
+# Frontend tests
+cd frontend
 npm run test
 ```
 
-4. **Tạo pull request** và review code
+## Deployment
 
-5. **Merge vào nhánh chính** sau khi được approve
-
-### 3. Quy Ước Code
-
-**Backend (Java):**
-- Sử dụng Lombok để giảm code boilerplate
-- Áp dụng SOLID principles
-- Code clean và dễ đọc
-- Comment rõ ràng cho các phương thức phức tạp
-
-**Frontend (JavaScript):**
-- Sử dụng ESLint cho kiểm tra code
-- Component-based development
-- Code tái sử dụng cao
-- Comment bằng tiếng Việt hoặc tiếng Anh
-
-## 📦 TRIỂN KHAI SẢN PHẨM
-
-### 1. Build Dịch Vụ Backend
-
+### Docker Deployment
 ```bash
-# Build tất cả dịch vụ backend
-cd Recruitment-System/backend
-mvn clean package -DskipTests
+docker-compose up --build -d
 ```
 
-### 2. Build Frontend
+### Manual Deployment
+1. Build the backend JAR:
+   ```bash
+   cd backend
+   mvn clean package
+   ```
+2. Deploy the JAR to your server
+3. Build and deploy the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   # Deploy to web server
+   ```
 
-```bash
-# Build frontend
-cd Recruitment-System/frontend
-npm run build
-```
+## Contributing
 
-### 3. Triển Khai Với Docker
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-```bash
-# Build và chạy sản phẩm
-docker-compose -f docker-compose.prod.yml up --build -d
-```
+## License
 
-### 4. Scale Dịch Vụ
+This project is licensed under the MIT License.
 
-```bash
-# Scale các dịch vụ theo nhu cầu
-docker-compose up --scale job-service=3 --scale candidate-service=3
-```
+## Support
 
-## 🛠 CÔNG CỤ HỖ TRỢ
+For support and questions, please open an issue in the repository.
 
-### 1. Swagger UI
+## Acknowledgments
 
-Truy cập `http://localhost:8081/swagger-ui.html` để:
-
-- Xem tài liệu API tự động
-- Thử nghiệm API trực tiếp
-- Xem các endpoint và mô tả
-- Kiểm tra JWT authentication
-
-### 2. Database Management
-
-Sử dụng các công cụ như:
-- DBeaver
-- pgAdmin
-- TablePlus
-
-Kết nối với cơ sở dữ liệu:
-```
-Host: localhost
-Port: 5432
-Database: recruitment_db
-Username: recruitment
-Password: recruitment123
-```
-
-### 3. Monitoring
-
-Các endpoint monitoring:
-- `http://localhost:8081/actuator/health` - Kiểm tra sức khỏe dịch vụ
-- `http://localhost:8081/actuator/metrics` - Các chỉ số hiệu suất
-- `http://localhost:8081/actuator/info` - Thông tin dịch vụ
-
-## 🤝 ĐÓNG GÓP
-
-Chúng tôi hoan nghênh mọi đóng góp cho dự án:
-
-1. **Fork** repository
-2. **Tạo nhánh** cho tính năng mới
-3. **Commit** thay đổi
-4. **Push** lên nhánh của bạn
-5. **Tạo Pull Request**
-
-## 📄 GIẤY PHÉP
-
-Dự án sử dụng giấy phép MIT. Xem file `LICENSE` để biết chi tiết.
-
----
-
-**Lưu ý:** Tài liệu này cung cấp hướng dẫn chi tiết từ cài đặt đến triển khai. Nếu có bất kỳ thắc mắc hoặc vấn đề nào, vui lòng liên hệ với đội ngũ phát triển để được hỗ trợ.
+- Spring Boot documentation
+- Vue.js documentation
+- Element Plus documentation
+- TensorFlow documentation
+- Deeplearning4j documentation

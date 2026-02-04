@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: jobportal-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: jobportal
+      MYSQL_USER: jobportal
+      MYSQL_PASSWORD: jobportal123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - jobportal-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: jobportal-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/jobportal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=jobportal
+      - SPRING_DATASOURCE_PASSWORD=jobportal123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - mysql
+    networks:
+      - jobportal-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: jobportal-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - jobportal-network
+
+volumes:
+  mysql_data:
+
+networks:
+  jobportal-network:
+    driver: bridge
