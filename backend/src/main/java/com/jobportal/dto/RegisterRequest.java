@@ -17,6 +17,8 @@ public class RegisterRequest {
     @NotBlank
     private String displayName;
 
+    private String role; // ROLE_CANDIDATE or ROLE_EMPLOYER
+
     public String getEmail() {
         return email;
     }
@@ -39,5 +41,13 @@ public class RegisterRequest {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

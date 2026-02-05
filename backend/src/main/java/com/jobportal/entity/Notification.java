@@ -30,6 +30,9 @@ public class Notification {
     @Column(name = "Message", nullable = false)
     private String message;
 
+    @Column(name = "Channel")
+    private String channel; // IN_APP, EMAIL, BOTH
+
     @Column(name = "IsRead")
     private Boolean isRead;
 

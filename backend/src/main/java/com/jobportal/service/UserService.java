@@ -28,17 +28,51 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(User user) {
-        if (user.getPasswordHash() != null) {
+        if (user.getPasswordHash() != null && !user.getPasswordHash().startsWith("$2")) {
+            // Only encode if not already encoded
             user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         }
 
         // Assign default role if no roles are assigned
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            Optional<Role> defaultRole = roleRepository.findByName("ROLE_USER");
-            defaultRole.ifPresent(role -> user.getRoles().add(role));
+            Optional<Role> defaultRole = roleRepository.findByName("ROLE_CANDIDATE");
+            if (defaultRole.isEmpty()) {
+                defaultRole = roleRepository.findByName("ROLE_USER");
+            }
+            if (defaultRole.isPresent()) {
+                if (user.getRoles() == null) {
+                    user.setRoles(new java.util.HashSet<>());
+                }
+                user.getRoles().add(defaultRole.get());
+            }
+        }
+
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(java.time.LocalDateTime.now());
+        }
+        if (user.getIsActive() == null) {
+            user.setIsActive(true);
+        }
+        if (user.getIsDeleted() == null) {
+            user.setIsDeleted(false);
+        }
+        if (user.getIsEmailConfirmed() == null) {
+            user.setIsEmailConfirmed(false);
         }
 
         return userRepository.save(user);
+    }
+
+    public User saveUserWithRole(User user, String roleName) {
+        if (user.getRoles() == null) {
+            user.setRoles(new java.util.HashSet<>());
+        }
+        Optional<Role> role = roleRepository.findByName(roleName);
+        if (role.isPresent()) {
+            user.getRoles().clear();
+            user.getRoles().add(role.get());
+        }
+        return saveUser(user);
     }
 
     public Optional<User> findByEmail(String email) {

@@ -6,7 +6,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,14 +24,14 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserService userService;
-    private final String jwtSecret = "jobportalsecretkey12345678901234567890"; // Should be stored in environment variables
+    private final String jwtSecret = "jobportalsecretkey12345678901234567890"; // Should be stored in environment
+                                                                               // variables
 
     @Autowired
     public JwtAuthenticationFilter(UserService userService) {
         this.userService = userService;
     }
 
-    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -46,12 +45,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorizationHeader.substring(7);
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
 
             String email = claims.getSubject();
+            @SuppressWarnings("unchecked")
             List<String> authorities = claims.get("authorities", List.class);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -59,9 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (user != null) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             user, null, authorities.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList())
-                    );
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList()));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
