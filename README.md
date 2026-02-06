@@ -1,276 +1,563 @@
-# Job Portal System
+# Job Portal Platform
 
-A comprehensive job portal system built with modern technologies including Java Spring Boot for backend, Vue.js for frontend, and MySQL for database. The system includes AI-powered features for CV analysis, matching, and chatbot functionality.
+A full-stack job portal application with Spring Boot backend and Vue.js frontend, featuring job searching, applications, and user management.
 
-## Technology Stack
+---
 
-### Backend
-- **Java 17** - Programming language
-- **Spring Boot 3.2.0** - Web framework
-- **Spring Security** - Authentication and authorization
-- **JWT** - Token-based authentication
-- **MySQL 8.0** - Database
-- **Maven** - Build tool
-- **Docker** - Containerization
+## 📋 Project Overview
 
-### Frontend
-- **Vue.js 3.3.4** - JavaScript framework
-- **Vue Router 4.2.5** - Routing
-- **Vuex 4.1.0** - State management
-- **Element Plus** - UI components
-- **Vite 5.0.8** - Build tool
-- **TypeScript** - Type safety
+This is a comprehensive job portal system that connects job seekers, employers, and administrators. The platform handles user authentication, job postings, applications, and profile management with a clean separation between backend and frontend.
 
-### AI/ML Services
-- **TensorFlow 2.15.0** - Machine learning
-- **Deeplearning4j 1.0.0-M2.1** - Deep learning
-- **ND4J 1.0.0-M2.1** - Numerical computing
+**Tech Stack:**
 
-## Features
+- **Backend:** Spring Boot 4.0.1, Java 21, Spring Security, Spring Data JPA
+- **Frontend:** Vue 3, TypeScript, Vite, TailwindCSS
+- **Database:** MySQL with Flyway migrations
+- **Authentication:** JWT (JSON Web Token)
+- **API Documentation:** Swagger/OpenAPI
 
-### Core Features
-- User authentication (JWT)
-- Job posting and management
-- CV creation and editing
-- Company profiles
-- Job search and filtering
-- Application tracking
-- Blog system
-- Notification system
-- Messaging system
+---
 
-### AI-Powered Features
-- CV analysis and parsing
-- CV-Job matching algorithm
-- AI chatbot for support
-- Resume optimization suggestions
+## 🏗️ Backend Architecture
 
-### Admin Features
-- User management
-- Job management
-- Company management
-- Analytics dashboard
-- Blog management
+### Location: `/Backend`
 
-## Project Structure
+The backend follows a **modular layered architecture** with clear separation of concerns.
+
+### 📁 Directory Structure
 
 ```
-JV/
-├── backend/                 # Spring Boot backend
-│   ├── src/main/java/com/jobportal/
-│   │   ├── config/         # Security and JWT configuration
-│   │   ├── controller/     # REST controllers
-│   │   ├── entity/         # JPA entities
-│   │   ├── repository/     # Data access layer
-│   │   ├── service/        # Business logic
-│   │   └── util/           # Utility classes
-│   ├── src/main/resources/ # Configuration files
-│   └── pom.xml             # Maven dependencies
-├── frontend/               # Vue.js frontend
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── views/         # Page components
-│   │   ├── router/        # Route configuration
-│   │   ├── store/         # Vuex store
-│   │   ├── services/      # API services
-│   │   └── assets/        # Static assets
-│   ├── public/            # Public files
-│   └── package.json       # Frontend dependencies
-├── docker-compose.yml     # Docker configuration
-└── README.md              # This file
+Backend/
+├── pom.xml                              # Maven configuration with dependencies
+├── mvnw / mvnw.cmd                      # Maven wrapper scripts
+├── flyway.conf                          # Flyway database migration config
+├── src/
+│   ├── main/
+│   │   ├── java/org/example/backend/
+│   │   │   ├── BackendApplication.java  # Spring Boot entry point
+│   │   │   ├── common/                  # Shared utilities and base classes
+│   │   │   │   ├── base/                # Base entity, repository, service classes
+│   │   │   │   ├── config/              # Common configurations
+│   │   │   │   ├── enums/               # Global enums (UserRole, Status, etc.)
+│   │   │   │   ├── exception/           # Custom exception classes
+│   │   │   │   ├── filter/              # Request/Response filters
+│   │   │   │   ├── response/            # API response wrapper classes
+│   │   │   │   ├── security/            # Security utilities, JWT handlers
+│   │   │   │   └── utils/               # General utility functions
+│   │   │   ├── config/                  # Spring configurations
+│   │   │   │   └── FlywayConfig.java     # Database migration configuration
+│   │   │   ├── infrastructure/          # External services and integrations
+│   │   │   │   ├── mail/                # Email service for notifications
+│   │   │   │   ├── scheduler/           # Scheduled tasks (cron jobs)
+│   │   │   │   └── storage/             # File storage operations
+│   │   │   └── module/                  # Feature modules
+│   │   │       ├── auth/                # Authentication module
+│   │   │       │   ├── controller/      # Auth endpoints (login, register)
+│   │   │       │   ├── service/         # Auth business logic
+│   │   │       │   ├── dto/             # Data transfer objects
+│   │   │       │   ├── entity/          # JPA entities (User, Role, Permission)
+│   │   │       │   └── repository/      # Database access layer
+│   │   │       ├── user/                # User management module
+│   │   │       │   ├── controller/      # User endpoints
+│   │   │       │   ├── service/         # User operations (CRUD)
+│   │   │       │   ├── dto/             # User DTOs
+│   │   │       │   ├── entity/          # User entity and related entities
+│   │   │       │   └── repository/      # User data access
+│   │   │       ├── company/             # Company/Employer module
+│   │   │       │   ├── controller/      # Company endpoints
+│   │   │       │   ├── service/         # Company business logic
+│   │   │       │   ├── dto/             # Company DTOs
+│   │   │       │   ├── entity/          # Company entities
+│   │   │       │   └── repository/      # Company data access
+│   │   │       └── jobseeker/           # Job Seeker module
+│   │   │           ├── controller/      # Job seeker endpoints
+│   │   │           ├── service/         # Job seeker business logic
+│   │   │           ├── dto/             # Job seeker DTOs
+│   │   │           ├── entity/          # Job seeker profile entities
+│   │   │           └── repository/      # Job seeker data access
+│   │   └── resources/
+│   │       ├── application.properties    # Application configuration (DB, JWT, Mail)
+│   │       └── db/migration/             # Flyway SQL migration files
+│   │           ├── V1__user_role_permission.sql      # Initial schema
+│   │           ├── V2__seed_roles_permissions.sql    # Role and permission data
+│   │           ├── V3__otp_password_refresh.sql      # OTP and refresh token table
+│   │           ├── V4__jobseekerprofile_company.sql  # Job seeker and company profiles
+│   │           ├── V5__alter_companies.sql           # Company table modifications
+│   │           ├── V6__fix_uuid_columns.sql          # UUID column fixes
+│   │           ├── V7__fix_token_id_columns.sql      # Token ID corrections
+│   │           └── V8__fix_database_charset.sql      # Database charset updates
+│   └── test/
+│       └── java/org/example/backend/    # Unit and integration tests
+└── target/                               # Build output (compiled classes, artifacts)
 ```
 
-## Getting Started
+### 🔧 Key Backend Components
+
+#### **Common Module** (`common/`)
+
+- **base/** - Base classes for Entity, Repository, and Service patterns
+- **config/** - Configuration classes for various features
+- **enums/** - User roles (ADMIN, EMPLOYER, JOB_SEEKER), Status types
+- **exception/** - Custom exceptions for API error handling
+- **filter/** - HTTP filters for authentication and logging
+- **response/** - Standardized API response wrapper
+- **security/** - JWT token generation/validation, SecurityUser
+- **utils/** - Utility methods for validation, transformation, etc.
+
+#### **Configuration** (`config/`)
+
+- **FlywayConfig.java** - Database migration settings and versioning
+
+#### **Infrastructure** (`infrastructure/`)
+
+- **mail/** - Email service for notifications (OTP, confirmation)
+- **scheduler/** - Background job scheduling (cleanup, reminders)
+- **storage/** - File upload/download operations
+
+#### **Feature Modules** (`module/`)
+
+1. **auth/** - Authentication & Authorization
+   - User login/registration
+   - JWT token management
+   - OTP verification
+   - Role-based access control
+
+2. **user/** - User Management
+   - User profile updates
+   - Role assignments
+   - Permission management
+
+3. **company/** - Company/Employer Management
+   - Company profile creation and updates
+   - Company information (size, industry, location)
+
+4. **jobseeker/** - Job Seeker Profile
+   - Seeker profile creation and management
+   - Skills, experience, education tracking
+
+### 💾 Database Schema (Flyway Migrations)
+
+- **V1:** Core tables (users, roles, permissions)
+- **V2:** Seed data for roles and permissions
+- **V3:** OTP and refresh token tables
+- **V4:** Job seeker profile and company tables
+- **V5-V8:** Schema refinements and bug fixes
+
+### 🛠️ Key Dependencies
+
+- **Spring Boot Starters:** Data JPA, Security, Web, Validation, Mail
+- **Database:** MySQL Connector, Flyway (DB versioning)
+- **Security:** JWT (jjwt) for token-based authentication
+- **Mapping:** MapStruct for DTO transformations
+- **API Docs:** SpringDoc OpenAPI for Swagger/API documentation
+- **Utilities:** Lombok for reducing boilerplate code
+
+### 📡 Running the Backend
+
+```bash
+cd Backend/
+mvn clean install  # Build and install dependencies
+mvn spring-boot:run  # Start the Spring Boot server (port 8080)
+```
+
+**API Documentation:** http://localhost:8080/swagger-ui.html
+
+---
+
+## 🎨 Frontend Architecture
+
+### Location: `/Frontend`
+
+The frontend is a **component-based Vue 3 application** with modular feature organization and state management.
+
+### 📁 Directory Structure
+
+```
+Frontend/
+├── package.json                    # NPM dependencies and scripts
+├── tsconfig.json                   # TypeScript configuration
+├── vite.config.ts                  # Vite bundler configuration
+├── tailwind.config.ts              # TailwindCSS styling config
+├── index.html                      # HTML entry point
+├── src/
+│   ├── main.ts                     # Application initialization
+│   ├── App.vue                     # Root Vue component
+│   ├── assets/                     # Static assets (images, fonts)
+│   ├── layouts/                    # Page layout components
+│   │   ├── DefaultLayout.vue       # Base layout for public pages
+│   │   ├── AdminLayout.vue         # Layout for admin dashboard
+│   │   ├── EmployerLayout.vue      # Layout for employer portal
+│   │   └── CandidateLayout.vue     # Layout for job seeker portal
+│   ├── modules/                    # Feature modules
+│   │   ├── auth/                   # Authentication feature
+│   │   │   ├── api.ts              # Auth API calls (login, register)
+│   │   │   ├── store.ts            # Pinia auth state management
+│   │   │   ├── types.ts            # TypeScript interfaces
+│   │   │   ├── schema.ts           # Zod validation schemas
+│   │   │   ├── index.ts            # Module exports
+│   │   │   └── pages/              # Auth pages (Login, Register, ForgotPassword)
+│   │   ├── job/                    # Job listings and details
+│   │   │   ├── api.ts              # Job API endpoints
+│   │   │   ├── types.ts            # Job data types
+│   │   │   ├── schema.ts           # Job validation schemas
+│   │   │   ├── queries.ts          # TanStack Query definitions
+│   │   │   ├── index.ts            # Module exports
+│   │   │   ├── components/         # Job-related components
+│   │   │   └── pages/              # Job listing, detail, create pages
+│   │   ├── candidate/              # Job seeker features
+│   │   │   ├── api.ts              # Candidate API calls
+│   │   │   ├── types.ts            # Candidate types
+│   │   │   ├── pages/              # Dashboard, profile, applications pages
+│   │   │   └── ...
+│   │   ├── employer/               # Employer/company features
+│   │   │   ├── api.ts              # Employer API calls
+│   │   │   ├── types.ts            # Employer types
+│   │   │   ├── pages/              # Company dashboard, job management
+│   │   │   └── ...
+│   │   └── admin/                  # Admin management features
+│   │       ├── api.ts              # Admin API endpoints
+│   │       ├── pages/              # User management, reports, settings
+│   │       └── ...
+│   ├── pages/                      # Global pages
+│   │   ├── Home.vue                # Landing page
+│   │   ├── NotFound.vue            # 404 page
+│   │   └── Forbidden.vue           # 403 access denied page
+│   ├── router/                     # Vue Router configuration
+│   │   ├── index.ts                # Router setup
+│   │   ├── routes.ts               # Global routes
+│   │   ├── auth.routes.ts          # Auth routes
+│   │   ├── candidate.routes.ts     # Candidate/job seeker routes
+│   │   ├── employer.routes.ts      # Employer/company routes
+│   │   ├── admin.routes.ts         # Admin routes
+│   │   └── guards.ts               # Route guards (auth, role-based)
+│   ├── shared/                     # Shared utilities and components
+│   │   ├── api/                    # API utilities and types
+│   │   │   ├── http.ts             # Axios instance and interceptors
+│   │   │   ├── types.ts            # API response types
+│   │   │   ├── error.types.ts      # Error handling types
+│   │   │   ├── pagination.ts       # Pagination utilities
+│   │   │   ├── normalizeError.ts   # Error normalization
+│   │   │   └── unwrap.ts           # Response unwrapping
+│   │   ├── components/             # Reusable UI components
+│   │   │   ├── HelloWorld.vue      # Example component
+│   │   │   └── ui/                 # UI component library (buttons, cards, etc.)
+│   │   ├── composables/            # Vue composition API utilities
+│   │   │   └── useAuth.ts          # Auth composable hook
+│   │   ├── lib/                    # Utility libraries
+│   │   │   └── utils.ts            # Helper functions
+│   │   ├── schemas/                # Shared validation schemas
+│   │   │   └── pagination.schema.ts # Pagination validation
+│   │   ├── toast/                  # Toast/notification system
+│   │   │   ├── toast.ts            # Toast notification service
+│   │   │   └── handleApiError.ts   # API error handling with toasts
+│   │   └── utils/                  # Utility functions
+│   │       └── formatSalary.ts     # Formatting utility for numbers
+│   ├── stores/                     # Global state management (Pinia)
+│   │   └── ui.store.ts             # UI state (theme, sidebar, etc.)
+│   └── styles/
+│       └── style.css               # Global styles
+├── public/                         # Public static files
+└── components.json                 # UI library configuration
+```
+
+### 🎯 Key Frontend Components
+
+#### **Layouts**
+
+- **DefaultLayout** - Public/guest pages (home, landing)
+- **AdminLayout** - Admin dashboard and management pages
+- **EmployerLayout** - Company portal for posting jobs
+- **CandidateLayout** - Job seeker portal for searching and applying
+
+#### **Modules** (Feature-based)
+
+1. **auth/** - Authentication & Authorization
+   - Login/Register pages
+   - Password reset
+   - JWT token persistence
+   - Role-based redirects
+
+2. **job/** - Job Listings & Management
+   - Job search and filtering
+   - Job detail view
+   - Job creation (employer)
+   - Job application functionality
+
+3. **candidate/** - Job Seeker Dashboard
+   - Profile management
+   - Application history
+   - Saved jobs
+   - Notification center
+
+4. **employer/** - Employer/Company Portal
+   - Company dashboard
+   - Job posting and management
+   - Application management
+   - Analytics and reports
+
+5. **admin/** - Admin Management
+   - User management
+   - Company verification
+   - System reports
+   - Platform settings
+
+#### **Shared Services**
+
+- **API Layer** (`shared/api/`)
+  - Axios instance with interceptors for auth tokens
+  - Error handling and normalization
+  - Pagination utilities
+  - Response unwrapping
+
+- **State Management** (`stores/`)
+  - Pinia for global state (UI, auth state)
+  - Module-level stores for features
+
+- **Router Guards** (`router/guards.ts`)
+  - Authentication verification
+  - Role-based access control
+  - Redirect logic
+
+- **Components** (`shared/components/`)
+  - Reusable UI components using Tailwind + Reka UI
+  - UI library for consistent design
+
+### 🎨 Styling & UI
+
+- **TailwindCSS** - Utility-first CSS framework
+- **Reka UI** - Headless component library
+- **Sonner** - Toast notifications
+- **Lucide Vue Next** - Icon library
+
+### 📦 Key Dependencies
+
+- **Framework:** Vue 3, Vue Router for navigation
+- **State:** Pinia for state management
+- **Data Fetching:** TanStack Vue Query (React Query for Vue)
+- **HTTP:** Axios with custom interceptors
+- **Form Validation:** Vee-validate + Zod for schema validation
+- **Styling:** TailwindCSS, Class Variance Authority, Tailwind Merge
+- **Build:** Vite for fast development and bundling
+
+### 🚀 Running the Frontend
+
+```bash
+cd Frontend/
+npm install  # or pnpm install
+npm run dev  # Start development server (port 5173)
+npm run build  # Build for production
+```
+
+---
+
+## 🔄 Integration Flow
+
+```
+┌─────────────────────────────────────────────┐
+│         Frontend (Vue 3 + TypeScript)        │
+│  ┌─────────────────────────────────────────┐ │
+│  │         User Interface Layers            │ │
+│  │  - Candidate Portal (Job Search/Apply)  │ │
+│  │  - Employer Portal (Post Jobs)           │ │
+│  │  - Admin Dashboard (System Management)   │ │
+│  └─────────────────────────────────────────┘ │
+│                      ↓                        │
+│  ┌─────────────────────────────────────────┐ │
+│  │    Shared Services Layer                 │ │
+│  │  - API/HTTP (Axios)                      │ │
+│  │  - State Management (Pinia)              │ │
+│  │  - Form Validation (Zod)                 │ │
+│  │  - Data Fetching (TanStack Query)        │ │
+│  └─────────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘
+                      ↓ (REST API)
+               http://localhost:8080
+                      ↓
+┌─────────────────────────────────────────────┐
+│      Backend (Spring Boot + Java 21)         │
+│  ┌─────────────────────────────────────────┐ │
+│  │    Feature Modules                       │ │
+│  │  - Auth (Login, JWT, OTP)                │ │
+│  │  - User Management (CRUD)                │ │
+│  │  - Job Management                        │ │
+│  │  - Company Management                    │ │
+│  │  - Job Seeker Profile                    │ │
+│  └─────────────────────────────────────────┘ │
+│                      ↓                        │
+│  ┌─────────────────────────────────────────┐ │
+│  │    Infrastructure Layer                  │ │
+│  │  - Database (JPA/Hibernate)              │ │
+│  │  - Mail Service (SMTP)                   │ │
+│  │  - Task Scheduling (Cron)                │ │
+│  │  - File Storage                          │ │
+│  └─────────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘
+                      ↓
+             MySQL Database
+          (Flyway Migrations)
+```
+
+---
+
+## 🔐 Authentication Flow
+
+1. **User Registration** → Backend validates and creates user account
+2. **User Login** → Backend authenticates and returns JWT token
+3. **Token Storage** → Frontend stores JWT in localStorage/sessionStorage
+4. **API Requests** → Frontend includes JWT in Authorization header
+5. **Token Validation** → Backend verifies JWT signature and expiration
+6. **Role-based Access** → Router guards check user roles before loading pages
+7. **Token Refresh** → Automatic refresh token mechanism (if implemented)
+
+---
+
+## 📊 Supported User Roles
+
+1. **ADMIN** - Platform administrator with full access
+2. **EMPLOYER** - Company representative who posts and manages jobs
+3. **JOB_SEEKER** - Candidate who searches and applies for jobs
+4. **USER** - Base role for all registered users
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Java 17+
-- Node.js 18+
+
+- Java 21 (Backend)
+- Node.js 18+ and npm/pnpm (Frontend)
 - MySQL 8.0+
-- Docker (optional)
+- Git
 
-### Installation
+### Setup Instructions
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/hoangtuanphong1a/SVTT-SDT.git
-   cd JV
-   ```
+#### 1. Backend Setup
 
-2. **Set up the database:**
-   ```bash
-   # Create database
-   mysql -u root -p -e "CREATE DATABASE jobportal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-   
-   # Create user
-   mysql -u root -p -e "CREATE USER 'jobportal'@'localhost' IDENTIFIED BY 'jobportal123';"
-   mysql -u root -p -e "GRANT ALL PRIVILEGES ON jobportal.* TO 'jobportal'@'localhost';"
-   ```
-
-3. **Build and run the backend:**
-   ```bash
-   cd backend
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
-4. **Install and run the frontend:**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-
-5. **Access the application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080
-
-### Using Docker
-
-1. **Build and run with Docker Compose:**
-   ```bash
-   docker-compose up --build
-   ```
-
-2. **Access the application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080
-   - MySQL: localhost:3306
-
-## API Documentation
-
-The backend provides RESTful APIs for all operations. Key endpoints include:
-
-- **Authentication:**
-  - `POST /api/auth/login` - User login
-  - `POST /api/auth/register` - User registration
-  - `GET /api/auth/profile` - Get user profile
-
-- **Jobs:**
-  - `GET /api/jobs` - Get all jobs
-  - `GET /api/jobs/{id}` - Get job by ID
-  - `POST /api/jobs` - Create job (Employer/Admin)
-  - `PUT /api/jobs/{id}` - Update job (Employer/Admin)
-  - `DELETE /api/jobs/{id}` - Delete job (Employer/Admin)
-
-- **Companies:**
-  - `GET /api/companies` - Get all companies
-  - `GET /api/companies/{id}` - Get company by ID
-
-- **CVs:**
-  - `GET /api/cvs` - Get all CVs
-  - `POST /api/cvs` - Create CV
-  - `PUT /api/cvs/{id}` - Update CV
-
-## Configuration
-
-### Backend Configuration
-Edit `backend/src/main/resources/application.properties`:
-
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/jobportal
-spring.datasource.username=jobportal
-spring.datasource.password=jobportal123
-
-# JWT Configuration
-jwt.secret=your-secret-key
-jwt.expiration=604800000
-
-# Server Configuration
-server.port=8080
-```
-
-### Frontend Configuration
-Edit `frontend/.env`:
-
-```env
-VUE_APP_API_URL=http://localhost:8080/api
-```
-
-## AI/ML Services
-
-The system includes AI-powered features for:
-
-1. **CV Analysis:** Parses and extracts information from resumes
-2. **CV-Job Matching:** Matches candidates with suitable job openings
-3. **Chatbot:** Provides automated support and assistance
-
-These services use TensorFlow and Deeplearning4j for machine learning capabilities.
-
-## Security
-
-The application uses JWT-based authentication with role-based access control:
-
-- **ADMIN:** Full system access
-- **EMPLOYER:** Job posting and candidate management
-- **JOBSEEKER:** Job search and application
-
-## Development
-
-### Backend Development
 ```bash
-cd backend
+cd Backend/
+mvn clean install
+# Update application.properties with your database credentials
 mvn spring-boot:run
 ```
 
-### Frontend Development
+#### 2. Frontend Setup
+
 ```bash
-cd frontend
+cd Frontend/
+npm install  # or pnpm install
 npm run dev
 ```
 
-### Testing
-```bash
-# Backend tests
-cd backend
-mvn test
+#### 3. Database Setup
 
-# Frontend tests
-cd frontend
-npm run test
+```bash
+# Flyway will automatically run migrations on backend startup
+# Manual migration (if needed):
+cd Backend/
+mvn flyway:migrate
 ```
 
-## Deployment
+---
 
-### Docker Deployment
+## 📝 Key Files Reference
+
+| File                                                | Purpose                                    |
+| --------------------------------------------------- | ------------------------------------------ |
+| `Backend/pom.xml`                                   | Maven dependencies and build configuration |
+| `Backend/src/main/resources/application.properties` | Database, JWT, Mail config                 |
+| `Backend/src/main/resources/db/migration/V*.sql`    | Database schema versions                   |
+| `Frontend/package.json`                             | NPM dependencies and scripts               |
+| `Frontend/vite.config.ts`                           | Build tool configuration                   |
+| `Frontend/src/router/index.ts`                      | Application routing setup                  |
+| `Frontend/src/stores/`                              | Global state management                    |
+
+---
+
+## 🔄 Development Workflow
+
+### Backend Development
+
+1. Create new feature in module (e.g., `module/job/`)
+2. Define Entity → Repository → Service → Controller
+3. Add database migration scripts in `db/migration/`
+4. Test with unit/integration tests
+5. Generate API docs via Swagger
+
+### Frontend Development
+
+1. Create new module or page in appropriate feature folder
+2. Define types and API calls
+3. Create components and pages
+4. Use composition API composables and Pinia stores
+5. Add routes and guards
+6. Test with local development server
+
+---
+
+## 🛠️ Common Commands
+
+### Backend
+
 ```bash
-docker-compose up --build -d
+mvn clean install              # Build project
+mvn spring-boot:run            # Run application
+mvn test                       # Run tests
+mvn flyway:migrate             # Run database migrations
+mvn flyway:repair              # Repair Flyway state
 ```
 
-### Manual Deployment
-1. Build the backend JAR:
-   ```bash
-   cd backend
-   mvn clean package
-   ```
-2. Deploy the JAR to your server
-3. Build and deploy the frontend:
-   ```bash
-   cd frontend
-   npm run build
-   # Deploy to web server
-   ```
+### Frontend
 
-## Contributing
+```bash
+npm run dev                    # Development server
+npm run build                  # Production build
+npm run preview                # Preview production build
+npm run lint                   # Linting
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+---
 
-## License
+## 📚 Architecture Principles
 
-This project is licensed under the MIT License.
+### Backend
 
-## Support
+- **Modular Design** - Independent feature modules
+- **Layered Architecture** - Controller → Service → Repository → Entity
+- **DRY Principle** - Shared base classes and utilities
+- **Security First** - JWT authentication and role-based authorization
+- **Database Versioning** - Flyway for controlled migrations
 
-For support and questions, please open an issue in the repository.
+### Frontend
 
-## Acknowledgments
+- **Component-Based** - Reusable Vue components
+- **Feature Modules** - Organized by business features
+- **State Management** - Centralized with Pinia
+- **Type Safety** - Full TypeScript support
+- **API Abstraction** - Centralized API layer with error handling
 
-- Spring Boot documentation
-- Vue.js documentation
-- Element Plus documentation
-- TensorFlow documentation
-- Deeplearning4j documentation
+---
+
+## 🤝 Contributing
+
+When adding new features:
+
+1. Follow existing module structure
+2. Add appropriate documentation
+3. Update this README for significant changes
+4. Test thoroughly before committing
+5. Maintain code consistency with existing patterns
+
+---
+
+## 📞 Support
+
+For issues or questions regarding the architecture:
+
+- Check existing code examples in modules
+- Review commit history for pattern changes
+- Refer to framework documentation (Spring Boot, Vue 3)
+
+---
+
+**Last Updated:** February 2026  
+**Version:** 1.0.0
