@@ -1,412 +1,390 @@
-# Job Portal Platform
+# 🎯 Việc Làm Plus - Job Portal Platform
 
-A full-stack job portal application with Spring Boot backend and Vue.js frontend, featuring job searching, applications, and user management.
+<p align="center">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.2.0-green?style=for-the-badge&logo=spring" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Vue.js-3.4-4FC08D?style=for-the-badge&logo=vue.js" alt="Vue.js">
+  <img src="https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java" alt="Java 21">
+  <img src="https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql" alt="MySQL">
+  <img src="https://img.shields.io/badge/Tailwind-3.3-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind">
+</p>
 
----
-
-## 📋 Project Overview
-
-This is a comprehensive job portal system that connects job seekers, employers, and administrators. The platform handles user authentication, job postings, applications, and profile management with a clean separation between backend and frontend.
-
-**Tech Stack:**
-
-- **Backend:** Spring Boot 4.0.1, Java 21, Spring Security, Spring Data JPA
-- **Frontend:** Vue 3, TypeScript, Vite, TailwindCSS
-- **Database:** MySQL with Flyway migrations
-- **Authentication:** JWT (JSON Web Token)
-- **API Documentation:** Swagger/OpenAPI
+<p align="center">
+  <b>Nền tảng tuyển dụng thông minh kết nối ứng viên và nhà tuyển dụng</b>
+</p>
 
 ---
 
-## 🏗️ Backend Architecture
+## 📋 Mục Lục
 
-### Location: `/Backend`
+- [Giới Thiệu](#-giới-thiệu)
+- [Tính Năng Chính](#-tính-năng-chính)
+- [Công Nghệ Sử Dụng](#-công-nghệ-sử-dụng)
+- [Cấu Trúc Dự Án](#-cấu-trúc-dự-án)
+- [Hướng Dẫn Cài Đặt](#-hướng-dẫn-cài-đặt)
+- [API Documentation](#-api-documentation)
+- [Docker Deployment](#-docker-deployment)
+- [Lưu Ý Quan Trọng](#-lưu-ý-quan-trọng)
+- [Tài Liệu Tham Khảo](#-tài-liệu-tham-khảo)
 
-The backend follows a **modular layered architecture** with clear separation of concerns.
+---
 
-### 📁 Directory Structure
+## 🌟 Giới Thiệu
+
+**Việc Làm Plus** là một nền tảng tuyển dụng toàn diện được xây dựng với kiến trúc microservices hiện đại, kết nối ba đối tượng chính:
+
+| Đối Tượng | Mô Tả |
+|-----------|-------|
+| 👤 **Ứng Viên (Job Seeker)** | Tìm kiếm việc làm, nộp đơn, quản lý CV và theo dõi ứng tuyển |
+| 🏢 **Nhà Tuyển Dụng (Employer)** | Đăng tin tuyển dụng, quản lý ứng viên, tìm kiếm CV |
+| ⚡ **Quản Trị Viên (Admin)** | Quản lý ngườii dùng, duyệt công ty, thống kê hệ thống |
+
+### 🎯 Mục Tiêu Dự Án
+- Xây dựng hệ thống tuyển dụng với giao diện hiện đại, thân thiện
+- Đảm bảo bảo mật với JWT Authentication & Role-based Authorization
+- Hỗ trợ xây dựng CV trực tuyến với nhiều mẫu template
+- Tích hợp AI phân tích CV và gợi ý việc làm phù hợp
+
+---
+
+## ✨ Tính Năng Chính
+
+### 🔐 Hệ Thống Xác Thực
+- ✅ Đăng ký/Đăng nhập với JWT Token
+- ✅ Phân quyền chi tiết (RBAC): ADMIN, EMPLOYER, JOBSEEKER
+- ✅ Xác thực email qua OTP
+- ✅ Quên mật khẩu & Đặt lại mật khẩu
+- ✅ Refresh Token tự động
+- ✅ Đăng nhập qua Google OAuth (tùy chọn)
+
+### 👤 Dành cho Ứng Viên
+- 🔍 Tìm kiếm việc làm với bộ lọc nâng cao
+- 📝 Tạo và quản lý nhiều CV với template đẹp
+- 💼 Nộp đơn ứng tuyển trực tuyến
+- ⭐ Lưu công việc yêu thích
+- 📬 Nhận thông báo việc làm phù hợp
+- 📊 Theo dõi trạng thái đơn ứng tuyển
+
+### 🏢 Dành cho Nhà Tuyển Dụng
+- 🏗️ Quản lý thông tin công ty
+- 📢 Đăng tin tuyển dụng
+- 👥 Quản lý danh sách ứng viên
+- 🔎 Tìm kiếm CV ứng viên
+- 📈 Báo cáo thống kê hiệu quả tuyển dụng
+- 💳 Quản lý gói dịch vụ đăng tin
+
+### ⚡ Dành cho Admin
+- 📊 Dashboard thống kê tổng quan
+- 👥 Quản lý ngườii dùng (block/unblock)
+- 🏢 Duyệt và quản lý công ty
+- 📝 Quản lý bài đăng tuyển dụng
+- 🔔 Quản lý thông báo hệ thống
+
+---
+
+## 🛠️ Công Nghệ Sử Dụng
+
+### Backend
+| Công Nghệ | Phiên Bản | Mục Đích |
+|-----------|-----------|----------|
+| Spring Boot | 3.2.0 | Framework chính |
+| Java | 21 | Ngôn ngữ lập trình |
+| Spring Security | 6.x | Bảo mật & Authentication |
+| Spring Data JPA | 3.x | ORM & Database access |
+| JWT | 0.12.3 | Token-based authentication |
+| MySQL | 8.0 | Relational database |
+| Flyway | - | Database migrations |
+| MapStruct | 1.5.5 | DTO mapping |
+| Lombok | 1.18.30 | Reduce boilerplate code |
+| Swagger/OpenAPI | 2.3.0 | API documentation |
+
+### Frontend
+| Công Nghệ | Phiên Bản | Mục Đích |
+|-----------|-----------|----------|
+| Vue.js | 3.4 | Framework UI |
+| TypeScript | 5.3 | Type-safe JavaScript |
+| Vite | 5.0 | Build tool & Dev server |
+| TailwindCSS | 3.3 | Utility-first CSS |
+| Element Plus | 2.4.4 | UI Component library |
+| Pinia | 2.1.7 | State management |
+| Vue Router | 4.2.5 | Client-side routing |
+| Axios | 1.6.2 | HTTP client |
+| TanStack Query | 5.x | Server state management |
+| Zod | 3.22 | Schema validation |
+
+### DevOps & Tools
+| Công Nghệ | Mục Đích |
+|-----------|----------|
+| Docker | Containerization |
+| Docker Compose | Multi-container orchestration |
+| Maven | Java build tool |
+| npm/pnpm | Node.js package manager |
+
+---
+
+## 📁 Cấu Trúc Dự Án
 
 ```
-Backend/
-├── pom.xml                              # Maven configuration with dependencies
-├── mvnw / mvnw.cmd                      # Maven wrapper scripts
-├── flyway.conf                          # Flyway database migration config
-├── src/
-│   ├── main/
-│   │   ├── java/org/example/backend/
-│   │   │   ├── BackendApplication.java  # Spring Boot entry point
-│   │   │   ├── common/                  # Shared utilities and base classes
-│   │   │   │   ├── base/                # Base entity, repository, service classes
-│   │   │   │   ├── config/              # Common configurations
-│   │   │   │   ├── enums/               # Global enums (UserRole, Status, etc.)
-│   │   │   │   ├── exception/           # Custom exception classes
-│   │   │   │   ├── filter/              # Request/Response filters
-│   │   │   │   ├── response/            # API response wrapper classes
-│   │   │   │   ├── security/            # Security utilities, JWT handlers
-│   │   │   │   └── utils/               # General utility functions
-│   │   │   ├── config/                  # Spring configurations
-│   │   │   │   └── FlywayConfig.java     # Database migration configuration
-│   │   │   ├── infrastructure/          # External services and integrations
-│   │   │   │   ├── mail/                # Email service for notifications
-│   │   │   │   ├── scheduler/           # Scheduled tasks (cron jobs)
-│   │   │   │   └── storage/             # File storage operations
-│   │   │   └── module/                  # Feature modules
-│   │   │       ├── auth/                # Authentication module
-│   │   │       │   ├── controller/      # Auth endpoints (login, register)
-│   │   │       │   ├── service/         # Auth business logic
-│   │   │       │   ├── dto/             # Data transfer objects
-│   │   │       │   ├── entity/          # JPA entities (User, Role, Permission)
-│   │   │       │   └── repository/      # Database access layer
-│   │   │       ├── user/                # User management module
-│   │   │       │   ├── controller/      # User endpoints
-│   │   │       │   ├── service/         # User operations (CRUD)
-│   │   │       │   ├── dto/             # User DTOs
-│   │   │       │   ├── entity/          # User entity and related entities
-│   │   │       │   └── repository/      # User data access
-│   │   │       ├── company/             # Company/Employer module
-│   │   │       │   ├── controller/      # Company endpoints
-│   │   │       │   ├── service/         # Company business logic
-│   │   │       │   ├── dto/             # Company DTOs
-│   │   │       │   ├── entity/          # Company entities
-│   │   │       │   └── repository/      # Company data access
-│   │   │       └── jobseeker/           # Job Seeker module
-│   │   │           ├── controller/      # Job seeker endpoints
-│   │   │           ├── service/         # Job seeker business logic
-│   │   │           ├── dto/             # Job seeker DTOs
-│   │   │           ├── entity/          # Job seeker profile entities
-│   │   │           └── repository/      # Job seeker data access
-│   │   └── resources/
-│   │       ├── application.properties    # Application configuration (DB, JWT, Mail)
-│   │       └── db/migration/             # Flyway SQL migration files
-│   │           ├── V1__user_role_permission.sql      # Initial schema
-│   │           ├── V2__seed_roles_permissions.sql    # Role and permission data
-│   │           ├── V3__otp_password_refresh.sql      # OTP and refresh token table
-│   │           ├── V4__jobseekerprofile_company.sql  # Job seeker and company profiles
-│   │           ├── V5__alter_companies.sql           # Company table modifications
-│   │           ├── V6__fix_uuid_columns.sql          # UUID column fixes
-│   │           ├── V7__fix_token_id_columns.sql      # Token ID corrections
-│   │           └── V8__fix_database_charset.sql      # Database charset updates
-│   └── test/
-│       └── java/org/example/backend/    # Unit and integration tests
-└── target/                               # Build output (compiled classes, artifacts)
+JV/
+├── 📁 backend/                 # Spring Boot Application
+│   ├── pom.xml                 # Maven dependencies
+│   ├── src/main/java/
+│   │   └── org/example/backend/
+│   │       ├── BackendApplication.java
+│   │       ├── common/         # Shared utilities
+│   │       │   ├── base/       # Base entity, service, repository
+│   │       │   ├── config/     # Configuration classes
+│   │       │   ├── enums/      # Global enums
+│   │       │   ├── exception/  # Custom exceptions
+│   │       │   ├── response/   # API response wrapper
+│   │       │   ├── security/   # JWT, Security config
+│   │       │   └── utils/      # Utility functions
+│   │       ├── config/         # Spring configurations
+│   │       ├── infrastructure/ # External services
+│   │       │   ├── mail/       # Email service
+│   │       │   └── storage/    # File storage
+│   │       └── module/         # Feature modules
+│   │           ├── auth/       # Authentication
+│   │           ├── user/       # User management
+│   │           ├── company/    # Company/Employer
+│   │           └── jobseeker/  # Job seeker profile
+│   └── src/main/resources/
+│       ├── application.properties  # App configuration
+│       └── db/migration/       # Flyway SQL scripts
+│
+├── 📁 frontend/                # Vue.js Application
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.ts
+│   └── src/
+│       ├── main.ts             # Entry point
+│       ├── App.vue             # Root component
+│       ├── assets/             # Static assets
+│       ├── layouts/            # Page layouts
+│       │   ├── DefaultLayout.vue
+│       │   └── AdminLayout.vue
+│       ├── modules/            # Feature modules
+│       │   └── auth/           # Auth module
+│       │       ├── api.ts      # API calls
+│       │       ├── store.ts    # Pinia store
+│       │       ├── types.ts    # TypeScript types
+│       │       └── schema.ts   # Validation schemas
+│       ├── router/             # Vue Router
+│       │   └── index.js        # Route definitions
+│       ├── shared/             # Shared utilities
+│       │   ├── api/            # HTTP client & interceptors
+│       │   └── components/     # Reusable components
+│       ├── store/              # Global state
+│       └── views/              # Page components
+│           ├── auth/           # Login, Register pages
+│           ├── admin/          # Admin pages
+│           ├── employer/       # Employer pages
+│           └── jobseeker/      # Job seeker pages
+│
+├── 📁 docs/                    # Documentation
+│   ├── AUTH_API_INTEGRATION.md
+│   ├── AUTH_API_TEST.md
+│   ├── database-schema.sql
+│   └── ...
+│
+├── 📁 docker/                  # Docker configurations
+├── docker-compose.yml          # Docker Compose setup
+└── README.md                   # This file
 ```
 
-### 🔧 Key Backend Components
+---
 
-#### **Common Module** (`common/`)
+## 🚀 Hướng Dẫn Cài Đặt
 
-- **base/** - Base classes for Entity, Repository, and Service patterns
-- **config/** - Configuration classes for various features
-- **enums/** - User roles (ADMIN, EMPLOYER, JOB_SEEKER), Status types
-- **exception/** - Custom exceptions for API error handling
-- **filter/** - HTTP filters for authentication and logging
-- **response/** - Standardized API response wrapper
-- **security/** - JWT token generation/validation, SecurityUser
-- **utils/** - Utility methods for validation, transformation, etc.
+### 📋 Yêu Cầu Hệ Thống
 
-#### **Configuration** (`config/`)
+- **Java**: JDK 21 hoặc cao hơn
+- **Node.js**: 18.x hoặc cao hơn
+- **MySQL**: 8.0+
+- **Maven**: 3.8+
+- **npm/pnpm**: Latest version
 
-- **FlywayConfig.java** - Database migration settings and versioning
-
-#### **Infrastructure** (`infrastructure/`)
-
-- **mail/** - Email service for notifications (OTP, confirmation)
-- **scheduler/** - Background job scheduling (cleanup, reminders)
-- **storage/** - File upload/download operations
-
-#### **Feature Modules** (`module/`)
-
-1. **auth/** - Authentication & Authorization
-   - User login/registration
-   - JWT token management
-   - OTP verification
-   - Role-based access control
-
-2. **user/** - User Management
-   - User profile updates
-   - Role assignments
-   - Permission management
-
-3. **company/** - Company/Employer Management
-   - Company profile creation and updates
-   - Company information (size, industry, location)
-
-4. **jobseeker/** - Job Seeker Profile
-   - Seeker profile creation and management
-   - Skills, experience, education tracking
-
-### 💾 Database Schema (Flyway Migrations)
-
-- **V1:** Core tables (users, roles, permissions)
-- **V2:** Seed data for roles and permissions
-- **V3:** OTP and refresh token tables
-- **V4:** Job seeker profile and company tables
-- **V5-V8:** Schema refinements and bug fixes
-
-### 🛠️ Key Dependencies
-
-- **Spring Boot Starters:** Data JPA, Security, Web, Validation, Mail
-- **Database:** MySQL Connector, Flyway (DB versioning)
-- **Security:** JWT (jjwt) for token-based authentication
-- **Mapping:** MapStruct for DTO transformations
-- **API Docs:** SpringDoc OpenAPI for Swagger/API documentation
-- **Utilities:** Lombok for reducing boilerplate code
-
-### 📡 Running the Backend
+### 🔧 Bước 1: Clone Repository
 
 ```bash
-cd Backend/
-mvn clean install  # Build and install dependencies
-mvn spring-boot:run  # Start the Spring Boot server (port 8080)
+git clone https://github.com/hoangtuanphong1a/SVTT-SDT.git
+cd SVTT-SDT
 ```
 
-**API Documentation:** http://localhost:8080/swagger-ui.html
+### 🗄️ Bước 2: Cấu Hình Database
 
----
+#### Option A: MySQL Local
 
-## 🎨 Frontend Architecture
-
-### Location: `/Frontend`
-
-The frontend is a **component-based Vue 3 application** with modular feature organization and state management.
-
-### 📁 Directory Structure
-
-```
-Frontend/
-├── package.json                    # NPM dependencies and scripts
-├── tsconfig.json                   # TypeScript configuration
-├── vite.config.ts                  # Vite bundler configuration
-├── tailwind.config.ts              # TailwindCSS styling config
-├── index.html                      # HTML entry point
-├── src/
-│   ├── main.ts                     # Application initialization
-│   ├── App.vue                     # Root Vue component
-│   ├── assets/                     # Static assets (images, fonts)
-│   ├── layouts/                    # Page layout components
-│   │   ├── DefaultLayout.vue       # Base layout for public pages
-│   │   ├── AdminLayout.vue         # Layout for admin dashboard
-│   │   ├── EmployerLayout.vue      # Layout for employer portal
-│   │   └── CandidateLayout.vue     # Layout for job seeker portal
-│   ├── modules/                    # Feature modules
-│   │   ├── auth/                   # Authentication feature
-│   │   │   ├── api.ts              # Auth API calls (login, register)
-│   │   │   ├── store.ts            # Pinia auth state management
-│   │   │   ├── types.ts            # TypeScript interfaces
-│   │   │   ├── schema.ts           # Zod validation schemas
-│   │   │   ├── index.ts            # Module exports
-│   │   │   └── pages/              # Auth pages (Login, Register, ForgotPassword)
-│   │   ├── job/                    # Job listings and details
-│   │   │   ├── api.ts              # Job API endpoints
-│   │   │   ├── types.ts            # Job data types
-│   │   │   ├── schema.ts           # Job validation schemas
-│   │   │   ├── queries.ts          # TanStack Query definitions
-│   │   │   ├── index.ts            # Module exports
-│   │   │   ├── components/         # Job-related components
-│   │   │   └── pages/              # Job listing, detail, create pages
-│   │   ├── candidate/              # Job seeker features
-│   │   │   ├── api.ts              # Candidate API calls
-│   │   │   ├── types.ts            # Candidate types
-│   │   │   ├── pages/              # Dashboard, profile, applications pages
-│   │   │   └── ...
-│   │   ├── employer/               # Employer/company features
-│   │   │   ├── api.ts              # Employer API calls
-│   │   │   ├── types.ts            # Employer types
-│   │   │   ├── pages/              # Company dashboard, job management
-│   │   │   └── ...
-│   │   └── admin/                  # Admin management features
-│   │       ├── api.ts              # Admin API endpoints
-│   │       ├── pages/              # User management, reports, settings
-│   │       └── ...
-│   ├── pages/                      # Global pages
-│   │   ├── Home.vue                # Landing page
-│   │   ├── NotFound.vue            # 404 page
-│   │   └── Forbidden.vue           # 403 access denied page
-│   ├── router/                     # Vue Router configuration
-│   │   ├── index.ts                # Router setup
-│   │   ├── routes.ts               # Global routes
-│   │   ├── auth.routes.ts          # Auth routes
-│   │   ├── candidate.routes.ts     # Candidate/job seeker routes
-│   │   ├── employer.routes.ts      # Employer/company routes
-│   │   ├── admin.routes.ts         # Admin routes
-│   │   └── guards.ts               # Route guards (auth, role-based)
-│   ├── shared/                     # Shared utilities and components
-│   │   ├── api/                    # API utilities and types
-│   │   │   ├── http.ts             # Axios instance and interceptors
-│   │   │   ├── types.ts            # API response types
-│   │   │   ├── error.types.ts      # Error handling types
-│   │   │   ├── pagination.ts       # Pagination utilities
-│   │   │   ├── normalizeError.ts   # Error normalization
-│   │   │   └── unwrap.ts           # Response unwrapping
-│   │   ├── components/             # Reusable UI components
-│   │   │   ├── HelloWorld.vue      # Example component
-│   │   │   └── ui/                 # UI component library (buttons, cards, etc.)
-│   │   ├── composables/            # Vue composition API utilities
-│   │   │   └── useAuth.ts          # Auth composable hook
-│   │   ├── lib/                    # Utility libraries
-│   │   │   └── utils.ts            # Helper functions
-│   │   ├── schemas/                # Shared validation schemas
-│   │   │   └── pagination.schema.ts # Pagination validation
-│   │   ├── toast/                  # Toast/notification system
-│   │   │   ├── toast.ts            # Toast notification service
-│   │   │   └── handleApiError.ts   # API error handling with toasts
-│   │   └── utils/                  # Utility functions
-│   │       └── formatSalary.ts     # Formatting utility for numbers
-│   ├── stores/                     # Global state management (Pinia)
-│   │   └── ui.store.ts             # UI state (theme, sidebar, etc.)
-│   └── styles/
-│       └── style.css               # Global styles
-├── public/                         # Public static files
-└── components.json                 # UI library configuration
+1. Tạo database trong MySQL:
+```sql
+CREATE DATABASE jv_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'TUANPHONG'@'localhost' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON jv_portal.* TO 'TUANPHONG'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-### 🎯 Key Frontend Components
+2. Hoặc cập nhật `backend/src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/your_database?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
 
-#### **Layouts**
-
-- **DefaultLayout** - Public/guest pages (home, landing)
-- **AdminLayout** - Admin dashboard and management pages
-- **EmployerLayout** - Company portal for posting jobs
-- **CandidateLayout** - Job seeker portal for searching and applying
-
-#### **Modules** (Feature-based)
-
-1. **auth/** - Authentication & Authorization
-   - Login/Register pages
-   - Password reset
-   - JWT token persistence
-   - Role-based redirects
-
-2. **job/** - Job Listings & Management
-   - Job search and filtering
-   - Job detail view
-   - Job creation (employer)
-   - Job application functionality
-
-3. **candidate/** - Job Seeker Dashboard
-   - Profile management
-   - Application history
-   - Saved jobs
-   - Notification center
-
-4. **employer/** - Employer/Company Portal
-   - Company dashboard
-   - Job posting and management
-   - Application management
-   - Analytics and reports
-
-5. **admin/** - Admin Management
-   - User management
-   - Company verification
-   - System reports
-   - Platform settings
-
-#### **Shared Services**
-
-- **API Layer** (`shared/api/`)
-  - Axios instance with interceptors for auth tokens
-  - Error handling and normalization
-  - Pagination utilities
-  - Response unwrapping
-
-- **State Management** (`stores/`)
-  - Pinia for global state (UI, auth state)
-  - Module-level stores for features
-
-- **Router Guards** (`router/guards.ts`)
-  - Authentication verification
-  - Role-based access control
-  - Redirect logic
-
-- **Components** (`shared/components/`)
-  - Reusable UI components using Tailwind + Reka UI
-  - UI library for consistent design
-
-### 🎨 Styling & UI
-
-- **TailwindCSS** - Utility-first CSS framework
-- **Reka UI** - Headless component library
-- **Sonner** - Toast notifications
-- **Lucide Vue Next** - Icon library
-
-### 📦 Key Dependencies
-
-- **Framework:** Vue 3, Vue Router for navigation
-- **State:** Pinia for state management
-- **Data Fetching:** TanStack Vue Query (React Query for Vue)
-- **HTTP:** Axios with custom interceptors
-- **Form Validation:** Vee-validate + Zod for schema validation
-- **Styling:** TailwindCSS, Class Variance Authority, Tailwind Merge
-- **Build:** Vite for fast development and bundling
-
-### 🚀 Running the Frontend
+#### Option B: Docker (Khuyến nghị)
 
 ```bash
-cd Frontend/
-npm install  # or pnpm install
-npm run dev  # Start development server (port 5173)
-npm run build  # Build for production
+docker-compose up -d mysql
 ```
+
+### ⚙️ Bước 3: Chạy Backend
+
+```bash
+cd backend
+
+# Build project
+mvn clean install -DskipTests
+
+# Run Spring Boot
+mvn spring-boot:run
+```
+
+Backend sẽ chạy tại: `http://localhost:8080`
+
+### 💻 Bước 4: Chạy Frontend
+
+```bash
+cd frontend
+
+# Cài đặt dependencies
+npm install
+# hoặc
+pnpm install
+
+# Chạy development server
+npm run dev
+```
+
+Frontend sẽ chạy tại: `http://localhost:3000`
 
 ---
 
-## 🔄 Integration Flow
+## 📚 API Documentation
 
-```
-┌─────────────────────────────────────────────┐
-│         Frontend (Vue 3 + TypeScript)        │
-│  ┌─────────────────────────────────────────┐ │
-│  │         User Interface Layers            │ │
-│  │  - Candidate Portal (Job Search/Apply)  │ │
-│  │  - Employer Portal (Post Jobs)           │ │
-│  │  - Admin Dashboard (System Management)   │ │
-│  └─────────────────────────────────────────┘ │
-│                      ↓                        │
-│  ┌─────────────────────────────────────────┐ │
-│  │    Shared Services Layer                 │ │
-│  │  - API/HTTP (Axios)                      │ │
-│  │  - State Management (Pinia)              │ │
-│  │  - Form Validation (Zod)                 │ │
-│  │  - Data Fetching (TanStack Query)        │ │
-│  └─────────────────────────────────────────┘ │
-└─────────────────────────────────────────────┘
-                      ↓ (REST API)
-               http://localhost:8080
-                      ↓
-┌─────────────────────────────────────────────┐
-│      Backend (Spring Boot + Java 21)         │
-│  ┌─────────────────────────────────────────┐ │
-│  │    Feature Modules                       │ │
-│  │  - Auth (Login, JWT, OTP)                │ │
-│  │  - User Management (CRUD)                │ │
-│  │  - Job Management                        │ │
-│  │  - Company Management                    │ │
-│  │  - Job Seeker Profile                    │ │
-│  └─────────────────────────────────────────┘ │
-│                      ↓                        │
-│  ┌─────────────────────────────────────────┐ │
-│  │    Infrastructure Layer                  │ │
-│  │  - Database (JPA/Hibernate)              │ │
-│  │  - Mail Service (SMTP)                   │ │
-│  │  - Task Scheduling (Cron)                │ │
-│  │  - File Storage                          │ │
-│  └─────────────────────────────────────────┘ │
-└─────────────────────────────────────────────┘
-                      ↓
-             MySQL Database
-          (Flyway Migrations)
-```
+Sau khi chạy backend, truy cập Swagger UI để xem tài liệu API đầy đủ:
+
+🔗 **Swagger UI**: http://localhost:8080/swagger-ui.html
+
+### Các Endpoint Chính
+
+| Endpoint | Method | Mô Tả |
+|----------|--------|-------|
+| `/api/auth/login` | POST | Đăng nhập |
+| `/api/auth/register` | POST | Đăng ký |
+| `/api/auth/register-jobseeker` | POST | Đăng ký ứng viên |
+| `/api/auth/register-company` | POST | Đăng ký nhà tuyển dụng |
+| `/api/auth/refresh` | POST | Làm mới token |
+| `/api/auth/me` | GET | Lấy thông tin user hiện tại |
 
 ---
 
-## 🔐 Authentication Flow
+## 🐳 Docker Deployment
 
-1. **User Registration** → Backend validates and creates user account
-2. **User Login** → Backend authenticates and returns JWT token
-3. **Token Storage** → Frontend stores JWT in localStorage/sessionStorage
-4. **API Requests** → Frontend includes JWT in Authorization header
-5. **Token Validation** → Backend verifies JWT signature and expiration
-6. **Role-based Access** → Router guards check user roles before loading pages
+### Chạy toàn bộ stack với Docker Compose
+
+```bash
+# Build và chạy tất cả services
+docker-compose up -d
+
+# Hoặc build lại
+docker-compose up -d --build
+
+# Xem logs
+docker-compose logs -f
+
+# Dừng tất cả services
+docker-compose down
+```
+
+### Services
+
+| Service | Port | Mô Tả |
+|---------|------|-------|
+| MySQL | 3306 | Database |
+| Backend | 8080 | Spring Boot API |
+| Frontend | 3000 | Vue.js App (nginx) |
+
+---
+
+## ⚠️ Lưu Ý Quan Trọng
+
+### 🔐 Bảo Mật
+- **JWT Secret**: Thay đổi `jwt.secret` trong `application.properties` khi deploy production
+- **Email Password**: Sử dụng App Password thay vì mật khẩu Gmail thường
+- **CORS**: Cập nhật `cors.allowed.origins` cho phù hợp môi trường
+
+### 🗃️ Database
+- Flyway hiện đang **bị tắt** (`spring.flyway.enabled=false`) do MySQL 9.5 không được hỗ trợ
+- Để bật Flyway, cần sử dụng MySQL 8.0 hoặc cập nhật Flyway version
+- DDL auto đang đặt là `create` - thay đổi thành `validate` hoặc `none` trong production
+
+### 📧 Email Configuration
+```properties
+spring.mail.username=your-email@gmail.com
+spring.mail.password=your-app-password  # Không phải mật khẩu thường
+```
+Tạo App Password tại: https://myaccount.google.com/apppasswords
+
+### 🔌 Ports
+- Backend: 8080
+- Frontend: 3000
+- MySQL: 3306
+
+---
+
+## 📖 Tài Liệu Tham Khảo
+
+| Tài Liệu | Mô Tả |
+|----------|-------|
+| [AUTH_API_INTEGRATION.md](docs/AUTH_API_INTEGRATION.md) | Hướng dẫn tích hợp API xác thực |
+| [AUTH_API_TEST.md](docs/AUTH_API_TEST.md) | Test cases cho API auth |
+| [SWAGGER_TEST_EXAMPLES.md](docs/SWAGGER_TEST_EXAMPLES.md) | Ví dụ test với Swagger |
+| [database-schema.sql](docs/database-schema.sql) | Schema database |
+
+---
+
+## 🎓 Nội Dung Đào Tạo
+
+Dự án này được phát triển trong khuôn khổ chương trình đào tạo:
+
+### 1. Java Core
+- Object, Class, Method, Variable
+- OOP: Inheritance, Polymorphism, Abstraction
+- Collection Framework
+- Exception Handling
+- File I/O
+
+### 2. Spring Boot
+- Maven Web Application
+- CRUD Application
+- RESTful Web Services
+- Microservices Architecture
+
+### 3. Vue.js
+- Vue 3 Composition API
+- Component Architecture
+- Vue Router & State Management
+- Lifecycle Hooks
+
+### 4. Docker
+- Docker Compose
+- Containerization
+
+---
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
 7. **Token Refresh** → Automatic refresh token mechanism (if implemented)
 
 ---

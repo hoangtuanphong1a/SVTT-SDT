@@ -1,283 +1,215 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { store } from '../store'
-import api from '../services/api'
+import { ref, onMounted } from 'vue'
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
-const companies = ref([])
-const isLoading = ref(false)
-const filters = ref({
-  keyword: '',
-  industry: '',
-  size: ''
-})
+const savedCompanies = ref(new Set())
+const activeTab = ref('all')
+const searchKeyword = ref('')
 
-const loadCompanies = async () => {
-  isLoading.value = true
-  try {
-    const params = { ...filters.value }
-    const response = await api.get('/companies', { params })
-    companies.value = response.data
-  } catch (error) {
-    console.error('Error loading companies:', error)
-  } finally {
-    isLoading.value = false
+const tabs = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'featured', label: 'Nổi bật' },
+  { id: 'verified', label: 'Đã xác minh' }
+]
+
+const industries = [
+  'Công nghệ thông tin',
+  'Tài chính - Ngân hàng',
+  'E-commerce',
+  'Game & Entertainment',
+  'Marketing - Quảng cáo',
+  'Giáo dục',
+  'Y tế',
+  'Sản xuất'
+]
+
+const companySizes = [
+  { value: '1-50', label: '1-50 nhân viên' },
+  { value: '51-200', label: '51-200 nhân viên' },
+  { value: '201-500', label: '201-500 nhân viên' },
+  { value: '500+', label: 'Trên 500 nhân viên' }
+]
+
+const companies = ref([
+  { id: 1, name: 'FPT Software', industry: 'Công nghệ thông tin', location: 'Hà Nội', jobs: 127, featured: true, verified: true, desc: 'FPT Software là công ty công nghệ hàng đầu Việt Nam với hơn 35.000 nhân viên.', logo: 'FPT' },
+  { id: 2, name: 'VNG Corporation', industry: 'Game & Entertainment', location: 'Hồ Chí Minh', jobs: 89, featured: true, verified: true, desc: 'VNG Corporation - Công ty game và dịch vụ số hàng đầu Đông Nam Á.', logo: 'VNG' },
+  { id: 3, name: 'Tiki', industry: 'E-commerce', location: 'Hồ Chí Minh', jobs: 54, featured: false, verified: true, desc: 'Tiki - Sàn thương mại điện tử hàng đầu Việt Nam.', logo: 'TIKI' },
+  { id: 4, name: 'Grab Vietnam', industry: 'Công nghệ thông tin', location: 'Hà Nội', jobs: 76, featured: true, verified: true, desc: 'Grab - Nền tảng di động hàng đầu Đông Nam Á.', logo: 'GRAB' },
+  { id: 5, name: 'Sendo', industry: 'E-commerce', location: 'Hà Nội', jobs: 43, featured: false, verified: false, desc: 'Sendo - Sàn TMĐT uy tín tại Việt Nam.', logo: 'SENDO' },
+  { id: 6, name: 'MoMo', industry: 'Tài chính - Ngân hàng', location: 'Hồ Chí Minh', jobs: 62, featured: true, verified: true, desc: 'MoMo - Ví điện tử hàng đầu Việt Nam.', logo: 'MOMO' },
+  { id: 7, name: 'Shopee Vietnam', industry: 'E-commerce', location: 'Hồ Chí Minh', jobs: 156, featured: true, verified: true, desc: 'Shopee - Nền tảng thương mại điện tử hàng đầu khu vực.', logo: 'SHOPEE' },
+  { id: 8, name: 'Zalo', industry: 'Công nghệ thông tin', location: 'Hồ Chí Minh', jobs: 98, featured: true, verified: true, desc: 'Zalo - Ứng dụng nhắn tin và thanh toán số hàng đầu Việt Nam.', logo: 'ZALO' }
+])
+
+const toggleSaveCompany = (companyId) => {
+  if (savedCompanies.value.has(companyId)) {
+    savedCompanies.value.delete(companyId)
+  } else {
+    savedCompanies.value.add(companyId)
   }
 }
 
-const applyFilters = () => {
-  loadCompanies()
+const filteredCompanies = () => {
+  return companies.value.filter(company => {
+    const matchesTab = activeTab.value === 'all' || 
+      (activeTab.value === 'featured' && company.featured) ||
+      (activeTab.value === 'verified' && company.verified)
+    const matchesSearch = searchKeyword.value === '' || 
+      company.name.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
+      company.desc.toLowerCase().includes(searchKeyword.value.toLowerCase())
+    return matchesTab && matchesSearch
+  })
 }
-
-onMounted(() => {
-  loadCompanies()
-})
 </script>
 
 <template>
-  <div class="company-list">
-    <div class="container">
-      <div class="header">
-        <h1>Tìm công ty</h1>
-        <p>Khám phá các công ty hàng đầu đang tuyển dụng</p>
+  <div class="min-h-screen bg-gray-50">
+    <Header />
+    
+    <!-- Hero Section -->
+    <section class="relative py-16 lg:py-24">
+      <div class="absolute inset-0">
+        <img 
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&h=800&fit=crop" 
+          alt="Office workspace" 
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-gray-900/70 to-gray-800/60"></div>
       </div>
-
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-group">
-          <label for="keyword">Từ khóa</label>
-          <input 
-            id="keyword" 
-            v-model="filters.keyword" 
-            type="text" 
-            placeholder="Nhập tên công ty..."
-            @keyup.enter="applyFilters"
-          />
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full mb-6">
+            <span class="text-sm font-medium">5000+ công ty uy tín</span>
+          </div>
+          <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-white">
+            Khám phá các nhà tuyển dụng
+            <span class="text-[#f26b38]">hàng đầu</span>
+          </h1>
+          <p class="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
+            Tìm hiểu về văn hóa công ty, đãi ngộ nhân viên và cơ hội phát triển sự nghiệp tại các doanh nghiệp hàng đầu Việt Nam
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <button class="px-6 py-3 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg font-medium">Khám phá ngay</button>
+            <button class="px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/40 hover:bg-white/30 text-white rounded-lg font-medium">Đăng ký nhà tuyển dụng</button>
+          </div>
         </div>
-        
-        <div class="filter-group">
-          <label for="industry">Ngành nghề</label>
-          <select id="industry" v-model="filters.industry">
-            <option value="">Tất cả ngành nghề</option>
-            <option value="Công nghệ thông tin">Công nghệ thông tin</option>
-            <option value="Tài chính">Tài chính</option>
-            <option value="Y tế">Y tế</option>
-            <option value="Giáo dục">Giáo dục</option>
-            <option value="Bán lẻ">Bán lẻ</option>
-          </select>
-        </div>
+      </div>
+    </section>
 
-        <div class="filter-group">
-          <label for="size">Quy mô</label>
-          <select id="size" v-model="filters.size">
-            <option value="">Tất cả quy mô</option>
-            <option value="1-50">1-50 nhân viên</option>
-            <option value="51-200">51-200 nhân viên</option>
-            <option value="201-500">201-500 nhân viên</option>
-            <option value="500+">Trên 500 nhân viên</option>
-          </select>
+    <main class="py-8 lg:py-12 -mt-8 relative z-20">
+      <div class="container mx-auto px-4">
+        <!-- Page Header -->
+        <div class="mb-8">
+          <h1 class="text-3xl lg:text-4xl font-bold mb-2">Tìm công ty</h1>
+          <p class="text-gray-600 text-lg">Khám phá các nhà tuyển dụng uy tín và cơ hội phát triển sự nghiệp</p>
         </div>
 
-        <button @click="applyFilters" class="btn btn-primary">Tìm kiếm</button>
-      </div>
+        <!-- Search Bar -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="relative">
+              <input 
+                v-model="searchKeyword"
+                type="text" 
+                placeholder="Tìm kiếm công ty..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#f26b38] focus:border-transparent pl-10"
+              />
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            
+            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#f26b38] focus:border-transparent">
+              <option value="">Tất cả ngành nghề</option>
+              <option v-for="ind in industries" :key="ind" :value="ind">{{ ind }}</option>
+            </select>
+            
+            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#f26b38] focus:border-transparent">
+              <option value="">Tất cả quy mô</option>
+              <option v-for="size in companySizes" :key="size.value" :value="size.value">{{ size.label }}</option>
+            </select>
+          </div>
+        </div>
 
-      <!-- Companies -->
-      <div v-if="isLoading" class="loading">Đang tải...</div>
-      <div v-else-if="companies.length === 0" class="no-results">
-        <p>Không tìm thấy công ty nào phù hợp</p>
-      </div>
-      <div v-else class="companies-grid">
-        <div v-for="company in companies" :key="company.id" class="company-card">
-          <div class="company-header">
-            <img :src="company.logo" :alt="company.name" class="company-logo" />
-            <div class="company-info">
-              <h3>{{ company.name }}</h3>
-              <p class="industry">{{ company.industry }}</p>
-              <div class="company-meta">
-                <span class="size">{{ company.size }}</span>
-                <span class="location">{{ company.location }}</span>
+        <!-- Tabs -->
+        <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+          <button 
+            v-for="tab in tabs" 
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+            :class="activeTab === tab.id ? 'bg-[#f26b38] text-white' : 'bg-white text-gray-700 hover:bg-orange-100 border border-gray-200'"
+          >
+            {{ tab.label }}
+          </button>
+          <div class="ml-auto text-sm text-gray-600">
+            <span class="font-medium">{{ filteredCompanies().length }}</span> công ty
+          </div>
+        </div>
+
+        <!-- Companies Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div 
+            v-for="company in filteredCompanies()" 
+            :key="company.id" 
+            class="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-xl hover:border-[#f26b38] transition-all duration-300 relative cursor-pointer group"
+          >
+            <!-- Header: Logo + Info -->
+            <div class="flex items-start gap-3 mb-4">
+              <!-- Logo -->
+              <div class="w-14 h-14 rounded-lg bg-gradient-to-br from-[#f26b38] to-[#e05a27] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                {{ company.logo }}
               </div>
+              
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span v-if="company.featured" class="px-2 py-0.5 bg-gradient-to-r from-[#f26b38] to-[#e05a27] text-white text-xs rounded-full">Top</span>
+                  <span v-if="company.verified" class="px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">✓</span>
+                </div>
+                <h3 class="text-lg font-bold group-hover:text-[#f26b38] transition-colors truncate">{{ company.name }}</h3>
+                <p class="text-sm text-[#f26b38] font-medium truncate">{{ company.industry }}</p>
+              </div>
+              
+              <!-- Save Button -->
+              <button @click="toggleSaveCompany(company.id)" class="text-gray-400 hover:text-[#f26b38] transition-colors flex-shrink-0">
+                <svg class="h-5 w-5" :fill="savedCompanies.has(company.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Meta Info -->
+            <div class="space-y-1 mb-4">
+              <p class="text-sm text-gray-600">📍 {{ company.location }}</p>
+              <p class="text-sm text-gray-600">💼 {{ company.jobs }} việc làm</p>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="flex gap-3 pt-4 border-t border-gray-100">
+              <router-link 
+                :to="`/companies/${company.id}`" 
+                class="flex-1 text-center px-4 py-2 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                Xem việc làm
+              </router-link>
+              <a href="#" class="flex-1 text-center px-4 py-2 border border-gray-300 hover:bg-orange-50 text-gray-700 rounded-lg text-sm transition-colors">
+                Xem profile
+              </a>
             </div>
           </div>
-          <div class="company-description">
-            <p>{{ company.description }}</p>
-          </div>
-          <div class="company-actions">
-            <router-link :to="`/companies/${company.id}`" class="btn btn-primary">Xem chi tiết</router-link>
-            <a :href="company.website" target="_blank" class="btn btn-outline">Website</a>
-          </div>
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-12">
+          <button class="px-8 py-3 border border-gray-300 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors font-medium">
+            Xem thêm công ty
+          </button>
         </div>
       </div>
-    </div>
+    </main>
+
+    <Footer />
   </div>
 </template>
-
-<style scoped>
-.company-list {
-  padding: 2rem 0;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.header p {
-  color: #6b7280;
-  font-size: 1.1rem;
-}
-
-.filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 3rem;
-  padding: 2rem;
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filter-group label {
-  font-weight: 600;
-  color: #374151;
-}
-
-.filter-group input,
-.filter-group select {
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.filter-group input:focus,
-.filter-group select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.companies-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.company-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-
-.company-card:hover {
-  transform: translateY(-5px);
-}
-
-.company-header {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 1rem;
-}
-
-.company-logo {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 50%;
-  background: #e5e7eb;
-  padding: 0.5rem;
-}
-
-.company-info h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-}
-
-.industry {
-  margin: 0 0 1rem 0;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.company-meta {
-  display: flex;
-  gap: 1rem;
-}
-
-.size,
-.location {
-  background: #f3f4f6;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.company-description {
-  margin-bottom: 2rem;
-}
-
-.company-description p {
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-.company-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-primary {
-  background-color: #667eea;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #5a67d8;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-}
-
-.btn-outline:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.loading,
-.no-results {
-  text-align: center;
-  padding: 4rem;
-  color: #6b7280;
-}
-
-.no-results p {
-  font-size: 1.2rem;
-}
-</style>

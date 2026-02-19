@@ -1,23 +1,12 @@
 <template>
   <div id="app">
-    <Header />
-    <main>
-      <router-view />
-    </main>
-    <Footer />
+    <router-view />
   </div>
 </template>
 
 <script>
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-
 export default {
-  name: 'App',
-  components: {
-    Header,
-    Footer
-  }
+  name: 'App'
 }
 </script>
 
@@ -32,8 +21,7 @@ export default {
   flex-direction: column;
 }
 
-main {
+#app > * {
   flex: 1;
-  padding: 20px 0;
 }
 </style>

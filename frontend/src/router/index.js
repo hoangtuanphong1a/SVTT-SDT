@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
+import ForgotPassword from '@/views/auth/ForgotPassword.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
+import ChangePassword from '@/views/auth/ChangePassword.vue'
 import JobList from '@/views/JobList.vue'
 import JobDetail from '@/views/JobDetail.vue'
 import CompanyList from '@/views/CompanyList.vue'
@@ -53,6 +56,22 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword
+  },
+  {
+    path: '/change-password',
+    name: 'ChangePassword',
+    component: ChangePassword,
+    meta: { requiresAuth: true }
   },
   {
     path: '/jobs',

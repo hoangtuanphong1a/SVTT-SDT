@@ -1,280 +1,268 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { store } from '../store'
-import api from '../services/api'
+import { ref, onMounted } from 'vue'
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
-const articles = ref([])
-const isLoading = ref(false)
-const filters = ref({
-  keyword: '',
-  category: '',
-  author: ''
-})
+const savedPosts = ref(new Set())
+const activeCategory = ref('all')
+const searchKeyword = ref('')
 
-const loadArticles = async () => {
-  isLoading.value = true
-  try {
-    const params = { ...filters.value }
-    const response = await api.get('/blog', { params })
-    articles.value = response.data
-  } catch (error) {
-    console.error('Error loading articles:', error)
-  } finally {
-    isLoading.value = false
+const categories = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'skills', label: 'Kỹ năng mềm' },
+  { id: 'cv-interview', label: 'CV & Phỏng vấn' },
+  { id: 'trends', label: 'Xu hướng' },
+  { id: 'career', label: 'Chuyện nghề nghiệp' },
+  { id: 'salary', label: 'Lương & Phúc lợi' }
+]
+
+const articles = ref([
+  {
+    id: 1,
+    title: '10 Kỹ năng mềm quan trọng giúp bạn thành công trong công việc',
+    excerpt: 'Khám phá những kỹ năng thiết yếu mà mọi chuyên gia cần có để phát triển sự nghiệp trong thời đại số hóa.',
+    category: 'Kỹ năng',
+    categoryId: 'skills',
+    date: '25/11/2024',
+    readTime: '5 phút đọc',
+    author: 'Nguyễn Văn A',
+    image: 'https://images.unsplash.com/photo-1722149493669-30098ef78f9f?w=600&h=400&fit=crop'
+  },
+  {
+    id: 2,
+    title: 'Cách viết CV xin việc ấn tượng thu hút nhà tuyển dụng',
+    excerpt: 'Hướng dẫn chi tiết từng bước tạo một bản CV chuyên nghiệp, nổi bật và tăng cơ hội được nhận vào làm.',
+    category: 'CV & Phỏng vấn',
+    categoryId: 'cv-interview',
+    date: '23/11/2024',
+    readTime: '7 phút đọc',
+    author: 'Trần Thị B',
+    image: 'https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=600&h=400&fit=crop'
+  },
+  {
+    id: 3,
+    title: 'Xu hướng tuyển dụng IT năm 2024: Những vị trí hot nhất',
+    excerpt: 'Phân tích thị trường lao động IT Việt Nam và dự báo những công nghệ, vị trí việc làm được săn đón nhất.',
+    category: 'Xu hướng',
+    categoryId: 'trends',
+    date: '20/11/2024',
+    readTime: '6 phút đọc',
+    author: 'Lê Hoàng C',
+    image: 'https://images.unsplash.com/photo-1624555130858-7ea5b8192c49?w=600&h=400&fit=crop'
+  },
+  {
+    id: 4,
+    title: 'Bí quyết phỏng vấn thành công - Những điều nhà tuyển dụng muốn thấy ở ứng viên',
+    excerpt: 'Chia sẻ những mẹo và chiến lược giúp bạn tự tin hơn trong buổi phỏng vấn và gây ấn tượng với nhà tuyển dụng.',
+    category: 'CV & Phỏng vấn',
+    categoryId: 'cv-interview',
+    date: '18/11/2024',
+    readTime: '8 phút đọc',
+    author: 'Phạm Minh D',
+    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=400&fit=crop'
+  },
+  {
+    id: 5,
+    title: 'Lộ trình nghề nghiệp cho lập trình viên từ Junior lên Senior',
+    excerpt: 'Hướng dẫn chi tiết các bước phát triển kỹ năng và kinh nghiệm để trở thành Senior Developer.',
+    category: 'Kỹ năng',
+    categoryId: 'skills',
+    date: '15/11/2024',
+    readTime: '10 phút đọc',
+    author: 'Hoàng Văn E',
+    image: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=600&h=400&fit=crop'
+  },
+  {
+    id: 6,
+    title: 'So sánh mức lương các vị trí IT tại Việt Nam năm 2024',
+    excerpt: 'Cập nhật chi tiết mức lương của các vị trí phổ biến trong ngành CNTT tại Việt Nam.',
+    category: 'Lương & Phúc lợi',
+    categoryId: 'salary',
+    date: '12/11/2024',
+    readTime: '6 phút đọc',
+    author: 'Đặng Thị F',
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop'
+  },
+  {
+    id: 7,
+    title: 'Cách xây dựng thương hiệu cá nhân cho người đi làm',
+    excerpt: 'Tìm hiểu tại sao thương hiệu cá nhân quan trọng và cách xây dựng nó để thăng tiến trong sự nghiệp.',
+    category: 'Chuyện nghề nghiệp',
+    categoryId: 'career',
+    date: '10/11/2024',
+    readTime: '5 phút đọc',
+    author: 'Bùi Văn G',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=400&fit=crop'
+  },
+  {
+    id: 8,
+    title: 'Remote work - Xu hướng làm việc từ xa tại Việt Nam',
+    excerpt: 'Khám phá cơ hội và thách thức của việc làm remote, cùng những công ty đang tuyển dụng vị trí này.',
+    category: 'Xu hướng',
+    categoryId: 'trends',
+    date: '08/11/2024',
+    readTime: '7 phút đọc',
+    author: 'Vũ Thị H',
+    image: 'https://images.unsplash.com/photo-1593642632823-8f78536788c6?w=600&h=400&fit=crop'
+  }
+])
+
+const toggleSavePost = (postId) => {
+  if (savedPosts.value.has(postId)) {
+    savedPosts.value.delete(postId)
+  } else {
+    savedPosts.value.add(postId)
   }
 }
 
-const applyFilters = () => {
-  loadArticles()
+const filteredArticles = () => {
+  return articles.value.filter(article => {
+    const matchesCategory = activeCategory.value === 'all' || article.categoryId === activeCategory.value
+    const matchesSearch = searchKeyword.value === '' || 
+      article.title.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
+      article.excerpt.toLowerCase().includes(searchKeyword.value.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 }
-
-onMounted(() => {
-  loadArticles()
-})
 </script>
 
 <template>
-  <div class="blog">
-    <div class="container">
-      <div class="header">
-        <h1>Blog nghề nghiệp</h1>
-        <p>Chia sẻ kinh nghiệm, tin tức và xu hướng nghề nghiệp mới nhất</p>
+  <div class="min-h-screen bg-gray-50">
+    <Header />
+    
+    <!-- Hero Section -->
+    <section class="relative py-16 lg:py-24">
+      <div class="absolute inset-0">
+        <img 
+          src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1920&h=800&fit=crop" 
+          alt="Career development" 
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-gray-900/70 to-gray-800/60"></div>
       </div>
-
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-group">
-          <label for="keyword">Tìm kiếm</label>
-          <input 
-            id="keyword" 
-            v-model="filters.keyword" 
-            type="text" 
-            placeholder="Nhập từ khóa tìm kiếm..."
-            @keyup.enter="applyFilters"
-          />
-        </div>
-        
-        <div class="filter-group">
-          <label for="category">Chủ đề</label>
-          <select id="category" v-model="filters.category">
-            <option value="">Tất cả chủ đề</option>
-            <option value="Công nghệ">Công nghệ</option>
-            <option value="Tài chính">Tài chính</option>
-            <option value="Y tế">Y tế</option>
-            <option value="Giáo dục">Giáo dục</option>
-            <option value="Kinh doanh">Kinh doanh</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="author">Tác giả</label>
-          <select id="author" v-model="filters.author">
-            <option value="">Tất cả tác giả</option>
-            <option value="Admin">Admin</option>
-            <option value="Chuyên gia">Chuyên gia</option>
-            <option value="Cộng tác viên">Cộng tác viên</option>
-          </select>
-        </div>
-
-        <button @click="applyFilters" class="btn btn-primary">Tìm kiếm</button>
-      </div>
-
-      <!-- Articles -->
-      <div v-if="isLoading" class="loading">Đang tải...</div>
-      <div v-else-if="articles.length === 0" class="no-results">
-        <p>Chưa có bài viết nào</p>
-      </div>
-      <div v-else class="articles-grid">
-        <div v-for="article in articles" :key="article.id" class="article-card">
-          <div class="article-image">
-            <img :src="article.image" :alt="article.title" />
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full mb-6">
+            <span class="text-sm font-medium">1000+ bài viết hữu ích</span>
           </div>
-          <div class="article-content">
-            <div class="article-meta">
-              <span class="category">{{ article.category }}</span>
-              <span class="date">{{ new Date(article.createdAt).toLocaleDateString('vi-VN') }}</span>
-              <span class="author">bởi {{ article.author }}</span>
-            </div>
-            <h3>{{ article.title }}</h3>
-            <p class="excerpt">{{ article.excerpt }}</p>
-            <div class="article-actions">
-              <router-link :to="`/blog/${article.id}`" class="btn btn-primary">Đọc tiếp</router-link>
-              <button class="btn btn-outline">Lưu bài viết</button>
-            </div>
+          <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-white">
+            Blog & Cẩm nang
+            <span class="text-[#f26b38]">nghề nghiệp</span>
+          </h1>
+          <p class="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
+            Chia sẻ kiến thức, kinh nghiệm và lời khuyên từ các chuyên gia để giúp bạn xây dựng sự nghiệp thành công
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <button class="px-6 py-3 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg font-medium">Đọc ngay</button>
+            <button class="px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/40 hover:bg-white/30 text-white rounded-lg font-medium">Đăng bài viết</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <main class="py-8 lg:py-12 -mt-8 relative z-20">
+      <div class="container mx-auto px-4">
+        <!-- Page Header -->
+        <div class="mb-8">
+          <h1 class="text-3xl lg:text-4xl font-bold mb-2">Blog & Cẩm nang nghề nghiệp</h1>
+          <p class="text-gray-600 text-lg">Kiến thức và kinh nghiệm hữu ích cho sự nghiệp của bạn</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div class="relative">
+            <input 
+              v-model="searchKeyword"
+              type="text" 
+              placeholder="Tìm kiếm bài viết..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#f26b38] focus:border-transparent pl-10"
+            />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="flex flex-wrap gap-2 mb-8">
+          <button 
+            v-for="cat in categories" 
+            :key="cat.id"
+            @click="activeCategory = cat.id"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="activeCategory === cat.id ? 'bg-[#f26b38] text-white' : 'bg-white text-gray-700 hover:bg-orange-100 border border-gray-200'"
+          >
+            {{ cat.label }}
+          </button>
+        </div>
+
+        <!-- Articles Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <article 
+            v-for="article in filteredArticles()" 
+            :key="article.id" 
+            class="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img 
+                :src="article.image" 
+                :alt="article.title" 
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+              <div class="absolute top-4 left-4">
+                <span class="px-2 py-1 bg-white text-gray-900 text-xs rounded-full">{{ article.category }}</span>
+              </div>
+            </div>
+            
+            <div class="p-6">
+              <h3 class="text-lg mb-2 line-clamp-2 group-hover:text-[#f26b38] transition-colors">
+                {{ article.title }}
+              </h3>
+              <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ article.excerpt }}</p>
+              
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-sm text-gray-500 text-xs">{{ article.author }}</span>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                  <span>📅 {{ article.date }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <span class="text-sm text-gray-500 flex items-center gap-1">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  {{ article.readTime }}
+                </span>
+                <button @click="toggleSavePost(article.id)" class="text-gray-400 hover:text-[#f26b38] transition-colors">
+                  <svg class="h-5 w-5" :fill="savedPosts.has(article.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <router-link 
+                :to="`/blog/${article.id}`" 
+                class="mt-4 inline-flex items-center gap-1 text-[#f26b38] hover:text-[#e05a27] font-medium text-sm"
+              >
+                Đọc thêm
+                <svg class="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </router-link>
+            </div>
+          </article>
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-12">
+          <button class="px-8 py-3 border border-gray-300 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition-colors font-medium">
+            Xem thêm bài viết
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
   </div>
 </template>
-
-<style scoped>
-.blog {
-  padding: 2rem 0;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.header p {
-  color: #6b7280;
-  font-size: 1.1rem;
-}
-
-.filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 3rem;
-  padding: 2rem;
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filter-group label {
-  font-weight: 600;
-  color: #374151;
-}
-
-.filter-group input,
-.filter-group select {
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.filter-group input:focus,
-.filter-group select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.articles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.article-card {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.article-card:hover {
-  transform: translateY(-5px);
-}
-
-.article-image {
-  height: 200px;
-  overflow: hidden;
-}
-
-.article-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.article-content {
-  padding: 1.5rem;
-}
-
-.article-meta {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.category {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.date,
-.author {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.article-content h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.25rem;
-  line-height: 1.4;
-}
-
-.excerpt {
-  color: #6b7280;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-}
-
-.article-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-primary {
-  background-color: #667eea;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #5a67d8;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-}
-
-.btn-outline:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.loading,
-.no-results {
-  text-align: center;
-  padding: 4rem;
-  color: #6b7280;
-}
-
-.no-results p {
-  font-size: 1.2rem;
-}
-</style>

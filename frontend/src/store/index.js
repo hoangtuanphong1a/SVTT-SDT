@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 import api from '@/services/api'
 
-export default createStore({
+const store = createStore({
   state: {
     user: null,
     token: localStorage.getItem('token') || null,
@@ -102,3 +102,6 @@ export default createStore({
     getError: (state) => state.error
   }
 })
+
+export default store
+export { store }

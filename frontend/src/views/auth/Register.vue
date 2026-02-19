@@ -5,11 +5,12 @@ import { store } from "../../store";
 import api from "../../services/api";
 
 const router = useRouter();
-const fullName = ref("");
+const username = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const role = ref("jobseeker");
+const fullName = ref("");
+const role = ref("JOB_SEEKER");
 const isLoading = ref(false);
 const error = ref("");
 const success = ref(false);
@@ -35,21 +36,23 @@ const register = async () => {
 
   try {
     const response = await api.post("/auth/register", {
+      username: username.value,
       email: email.value,
       password: password.value,
-      displayName: fullName.value,
+      fullName: fullName.value,
     });
 
-    success.value = true;
-    store.addNotification({
-      type: "success",
-      message: "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.",
-    });
+    const { success: isSuccess, data, message } = response.data;
 
-    // Redirect to login after 2 seconds
-    setTimeout(() => {
-      router.push("/login");
-    }, 2000);
+    if (isSuccess && data) {
+      success.value = true;
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } else {
+      error.value = message || "Đăng ký thất bại. Vui lòng thử lại.";
+    }
   } catch (err) {
     console.error("Register error:", err);
     error.value =
@@ -94,6 +97,15 @@ const register = async () => {
           </div>
 
           <form @submit.prevent="register" class="register-form">
+            <div class="form-group">
+              <input
+                v-model="username"
+                type="text"
+                placeholder="Tên đăng nhập"
+                required
+              />
+            </div>
+
             <div class="form-group">
               <input
                 v-model="fullName"
@@ -144,6 +156,12 @@ const register = async () => {
               </button>
             </div>
 
+            <div class="form-group">
+              <select v-model="role" required>
+                <option value="JOB_SEEKER">Ứng viên tìm việc</option>
+                <option value="EMPLOYER">Nhà tuyển dụng</option>
+              </select>
+            </div>
 
             <div v-if="error" class="error-message">
               {{ error }}

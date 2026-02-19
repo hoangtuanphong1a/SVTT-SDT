@@ -14,6 +14,7 @@ import org.example.backend.module.auth.entity.User;
 import org.example.backend.module.auth.repository.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,9 +41,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(AuthRequest request) {
         try {
+            // Support login with either username or email
+            String loginId = request.getUsername();
+            String username = loginId;
+            
+            // If loginId contains '@', treat it as email
+            if (loginId != null && loginId.contains("@")) {
+                User user = userRepository.findByEmail(loginId)
+                        .orElseThrow(() -> new AuthenticationException("Invalid email or password"));
+                username = user.getUsername();
+            }
+            
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
+                            username,
                             request.getPassword()
                     )
             );
@@ -58,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
                     
         } catch (Exception e) {
-            throw new AuthenticationException("Invalid username or password");
+            throw new AuthenticationException("Invalid username/email or password");
         }
     }
     
@@ -207,6 +219,7 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.clearContext();
     }
     
+    @Async
     private void sendVerificationEmail(User user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
@@ -219,6 +232,7 @@ public class AuthServiceImpl implements AuthService {
         mailSender.send(message);
     }
     
+    @Async
     private void sendOTPEmail(User user, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
