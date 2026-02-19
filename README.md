@@ -385,157 +385,22 @@ Dự án này được phát triển trong khuôn khổ chương trình đào t�
 
 1. Fork repository
 2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
-7. **Token Refresh** → Automatic refresh token mechanism (if implemented)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
 
 ---
 
-## 📊 Supported User Roles
+## 📄 License
 
-1. **ADMIN** - Platform administrator with full access
-2. **EMPLOYER** - Company representative who posts and manages jobs
-3. **JOB_SEEKER** - Candidate who searches and applies for jobs
-4. **USER** - Base role for all registered users
+Dự án này thuộc về chương trình đào tạo SVTT-SDT.
 
 ---
 
-## 🚀 Getting Started
+<p align="center">
+  <b>Built with ❤️ by SVTT-SDT Team</b>
+</p>
 
-### Prerequisites
-
-- Java 21 (Backend)
-- Node.js 18+ and npm/pnpm (Frontend)
-- MySQL 8.0+
-- Git
-
-### Setup Instructions
-
-#### 1. Backend Setup
-
-```bash
-cd Backend/
-mvn clean install
-# Update application.properties with your database credentials
-mvn spring-boot:run
-```
-
-#### 2. Frontend Setup
-
-```bash
-cd Frontend/
-npm install  # or pnpm install
-npm run dev
-```
-
-#### 3. Database Setup
-
-```bash
-# Flyway will automatically run migrations on backend startup
-# Manual migration (if needed):
-cd Backend/
-mvn flyway:migrate
-```
-
----
-
-## 📝 Key Files Reference
-
-| File                                                | Purpose                                    |
-| --------------------------------------------------- | ------------------------------------------ |
-| `Backend/pom.xml`                                   | Maven dependencies and build configuration |
-| `Backend/src/main/resources/application.properties` | Database, JWT, Mail config                 |
-| `Backend/src/main/resources/db/migration/V*.sql`    | Database schema versions                   |
-| `Frontend/package.json`                             | NPM dependencies and scripts               |
-| `Frontend/vite.config.ts`                           | Build tool configuration                   |
-| `Frontend/src/router/index.ts`                      | Application routing setup                  |
-| `Frontend/src/stores/`                              | Global state management                    |
-
----
-
-## 🔄 Development Workflow
-
-### Backend Development
-
-1. Create new feature in module (e.g., `module/job/`)
-2. Define Entity → Repository → Service → Controller
-3. Add database migration scripts in `db/migration/`
-4. Test with unit/integration tests
-5. Generate API docs via Swagger
-
-### Frontend Development
-
-1. Create new module or page in appropriate feature folder
-2. Define types and API calls
-3. Create components and pages
-4. Use composition API composables and Pinia stores
-5. Add routes and guards
-6. Test with local development server
-
----
-
-## 🛠️ Common Commands
-
-### Backend
-
-```bash
-mvn clean install              # Build project
-mvn spring-boot:run            # Run application
-mvn test                       # Run tests
-mvn flyway:migrate             # Run database migrations
-mvn flyway:repair              # Repair Flyway state
-```
-
-### Frontend
-
-```bash
-npm run dev                    # Development server
-npm run build                  # Production build
-npm run preview                # Preview production build
-npm run lint                   # Linting
-```
-
----
-
-## 📚 Architecture Principles
-
-### Backend
-
-- **Modular Design** - Independent feature modules
-- **Layered Architecture** - Controller → Service → Repository → Entity
-- **DRY Principle** - Shared base classes and utilities
-- **Security First** - JWT authentication and role-based authorization
-- **Database Versioning** - Flyway for controlled migrations
-
-### Frontend
-
-- **Component-Based** - Reusable Vue components
-- **Feature Modules** - Organized by business features
-- **State Management** - Centralized with Pinia
-- **Type Safety** - Full TypeScript support
-- **API Abstraction** - Centralized API layer with error handling
-
----
-
-## 🤝 Contributing
-
-When adding new features:
-
-1. Follow existing module structure
-2. Add appropriate documentation
-3. Update this README for significant changes
-4. Test thoroughly before committing
-5. Maintain code consistency with existing patterns
-
----
-
-## 📞 Support
-
-For issues or questions regarding the architecture:
-
-- Check existing code examples in modules
-- Review commit history for pattern changes
-- Refer to framework documentation (Spring Boot, Vue 3)
-
----
-
-**Last Updated:** February 2026  
-**Version:** 1.0.0
+<p align="center">
+  <sub>Last Updated: February 2026</sub>
+</p>
