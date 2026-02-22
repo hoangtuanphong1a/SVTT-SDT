@@ -23,15 +23,8 @@ const login = async () => {
 
     // Redirect based on role
     const user = authStore.user;
-    if (user?.role === "JOB_SEEKER") {
-      router.push("/jobseeker/dashboard");
-    } else if (user?.role === "EMPLOYER") {
-      router.push("/employer/dashboard");
-    } else if (user?.role === "ADMIN") {
-      router.push("/admin/dashboard");
-    } else {
-      router.push("/");
-    }
+    // Always redirect to home page after login
+    router.push("/");
   } catch (err) {
     console.error("Login error:", err);
     error.value =
@@ -52,7 +45,7 @@ const login = async () => {
           <div class="brand-logo">
             <span class="logo-icon">💼</span>
             <span class="logo-text"
-              >Việc<span class="logo-accent">Làm</span>Plus</span
+              >CV<span class="logo-accent">King</span></span
             >
           </div>
 
@@ -176,7 +169,7 @@ const login = async () => {
         <div class="illustration-content">
           <div class="illustration-icon">💼</div>
           <h2>Chào mừng trở lại!</h2>
-          <h1>Việc<span class="highlight">Làm</span>Plus</h1>
+          <h1>CV<span class="highlight">King</span></h1>
           <p>Kết nối với hàng nghìn cơ hội việc làm hấp dẫn</p>
 
           <div class="features">
@@ -321,8 +314,9 @@ const login = async () => {
 .form-section {
   padding: 3rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 4rem;
 }
 
 .form-card {
@@ -572,16 +566,19 @@ const login = async () => {
 
   .form-section {
     padding: 2rem 1.5rem;
+    padding-top: 4rem;
   }
 }
 
 @media (max-width: 480px) {
   .login-page {
     padding: 1rem;
+    padding-top: 2rem;
   }
 
   .form-section {
     padding: 1.5rem 1rem;
+    padding-top: 2rem;
   }
 
   .form-header h2 {

@@ -1,11 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
 const savedJobs = ref(new Set())
 const savedCompanies = ref(new Set())
 const savedPosts = ref(new Set())
+const isVisible = ref(false)
+
+onMounted(() => {
+  setTimeout(() => {
+    isVisible.value = true
+  }, 100)
+})
 
 const stats = [
   { value: '10,000+', label: 'Việc làm' },
@@ -101,41 +108,89 @@ const toggleSavePost = (postId) => {
   <div class="min-h-screen bg-white flex flex-col">
     <Header />
     <main class="flex-1">
-      <section class="relative bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 py-20 lg:py-28">
+      <section class="relative bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 py-20 lg:py-28 overflow-hidden">
+        <!-- Animated Background Blobs -->
         <div class="absolute inset-0 overflow-hidden">
-          <div class="absolute -top-24 -right-24 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl"></div>
-          <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-pink-200/30 rounded-full blur-3xl"></div>
+          <div class="absolute -top-24 -right-24 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl animate-pulse"></div>
+          <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-pink-200/30 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
         </div>
+        
+        <!-- Floating Job Icons -->
+        <div class="absolute top-20 left-10 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
+          <span class="text-4xl filter drop-shadow-lg">💼</span>
+        </div>
+        <div class="absolute top-32 right-20 animate-bounce" style="animation-duration: 2.5s; animation-delay: 1s;">
+          <span class="text-3xl filter drop-shadow-lg">💰</span>
+        </div>
+        <div class="absolute bottom-40 left-20 animate-bounce" style="animation-duration: 3.5s; animation-delay: 1.5s;">
+          <span class="text-3xl filter drop-shadow-lg">📋</span>
+        </div>
+        <div class="absolute bottom-32 right-10 animate-bounce" style="animation-duration: 2.8s; animation-delay: 0.8s;">
+          <span class="text-4xl filter drop-shadow-lg">🎯</span>
+        </div>
+        <div class="absolute top-1/3 left-1/4 animate-bounce" style="animation-duration: 3.2s; animation-delay: 2s;">
+          <span class="text-2xl filter drop-shadow-lg">💻</span>
+        </div>
+        
         <div class="container mx-auto px-4 relative z-10">
           <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div class="space-y-6">
-              <div class="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-[#f26b38] rounded-full">
+            <!-- Left Content with Animation -->
+            <div 
+              class="space-y-6 transform transition-all duration-700 ease-out"
+              :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+            >
+              <div 
+                class="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-[#f26b38] rounded-full animate-bounce"
+                style="animation-duration: 2s;"
+              >
                 <span class="text-sm">1000+ việc làm mới mỗi ngày</span>
               </div>
-              <h1 class="text-4xl lg:text-6xl font-bold">
+              <h1 
+                class="text-4xl lg:text-6xl font-bold transform transition-all duration-700 delay-100"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+              >
                 Tìm công việc<br />
                 <span class="bg-gradient-to-r from-[#f26b38] to-[#e05a27] bg-clip-text text-transparent">mơ ước của bạn</span>
               </h1>
-              <p class="text-lg text-gray-600 max-w-xl">Khám phá hàng nghìn cơ hội nghề nghiệp từ các công ty hàng đầu.</p>
-              <div class="flex flex-wrap gap-4">
-                <button class="px-6 py-3 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg font-medium">Tìm việc ngay</button>
-                <button class="px-6 py-3 border border-gray-300 rounded-lg hover:border-gray-400">Tạo CV miễn phí</button>
+              <p 
+                class="text-lg text-gray-600 max-w-xl transform transition-all duration-700 delay-200"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+              >
+                Khám phá hàng nghìn cơ hội nghề nghiệp từ các công ty hàng đầu.
+              </p>
+              <div 
+                class="flex flex-wrap gap-4 transform transition-all duration-700 delay-300"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+              >
+                <button class="px-6 py-3 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg font-medium transform hover:scale-105 transition-all duration-300">Tìm việc ngay</button>
+                <button class="px-6 py-3 border border-gray-300 rounded-lg hover:border-gray-400 transform hover:scale-105 transition-all duration-300">Tạo CV miễn phí</button>
               </div>
-              <div class="flex flex-wrap gap-8 pt-8">
-                <div v-for="stat in stats" :key="stat.label">
-                  <div class="text-3xl font-bold text-[#f26b38]">{{ stat.value }}</div>
+              <div 
+                class="flex flex-wrap gap-8 pt-8 transform transition-all duration-700 delay-500"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+              >
+                <div v-for="(stat, index) in stats" :key="stat.label" class="transform transition-all duration-500" :style="{ transitionDelay: `${(index + 4) * 100}ms` }">
+                  <div class="text-3xl font-bold text-[#f26b38] hover:scale-110 transition-transform duration-300">{{ stat.value }}</div>
                   <div class="text-sm text-gray-600">{{ stat.label }}</div>
                 </div>
               </div>
             </div>
-            <div class="relative hidden lg:block">
-              <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+            <!-- Right Content with Animation -->
+            <div 
+              class="relative hidden lg:block transform transition-all duration-1000 delay-300"
+              :class="isVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'"
+            >
+              <div class="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-all duration-500">
                 <img src="https://images.unsplash.com/photo-1589979034086-5885b60c8f59?w=600&h=500&fit=crop" alt="Workspace" class="w-full h-[500px] object-cover" />
                 <div class="absolute inset-0 bg-gradient-to-t from-orange-900/20 to-transparent"></div>
               </div>
-              <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl">
+              <!-- Floating Card Animation -->
+              <div 
+                class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl transform transition-all duration-700 delay-700 hover:scale-110"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
                     <span class="text-xl">✓</span>
                   </div>
                   <div>
@@ -143,6 +198,13 @@ const toggleSavePost = (postId) => {
                     <div class="font-bold">+1,247 hôm nay</div>
                   </div>
                 </div>
+              </div>
+              <!-- Additional Floating Icons -->
+              <div class="absolute -top-4 -right-4 bg-white p-2 rounded-full shadow-lg animate-bounce" style="animation-duration: 2s; animation-delay: 1.2s;">
+                <span class="text-2xl">🔥</span>
+              </div>
+              <div class="absolute top-1/2 -right-8 bg-white p-2 rounded-full shadow-lg animate-bounce" style="animation-duration: 2.5s; animation-delay: 1.8s;">
+                <span class="text-2xl">⭐</span>
               </div>
             </div>
           </div>

@@ -44,12 +44,24 @@ export interface LoginResponse {
   isVerified: boolean
 }
 
+// Company info for employer registration
+export interface CompanyInfo {
+  companyName: string
+  companyPhone: string
+  companyAddress: string
+  companyWebsite?: string
+  industry?: string
+  companySize?: string
+}
+
 // Register request
 export interface RegisterRequest {
   username: string
   email: string
   password: string
   fullName: string
+  role: UserRole
+  companyInfo?: CompanyInfo
 }
 
 // Register response

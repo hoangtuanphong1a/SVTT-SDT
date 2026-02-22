@@ -2,6 +2,7 @@ package org.example.backend.module.auth.dto.response;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +30,23 @@ public class RegisterRequest {
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
     private String fullName;
+    
+    @NotNull(message = "Role is required")
+    private String role;
+    
+    // Company info for employer registration
+    private CompanyInfoDto companyInfo;
+    
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CompanyInfoDto {
+        private String companyName;
+        private String companyPhone;
+        private String companyAddress;
+        private String companyWebsite;
+        private String industry;
+        private String companySize;
+    }
 }

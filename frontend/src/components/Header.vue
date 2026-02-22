@@ -11,6 +11,23 @@ const openDropdown = ref(null)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)
 const userName = computed(() => user.value?.fullName || user.value?.username || 'User')
+const userRole = computed(() => user.value?.role || '')
+
+// Role labels
+const roleLabels = {
+  'JOB_SEEKER': 'Ứng viên',
+  'EMPLOYER': 'Nhà tuyển dụng',
+  'ADMIN': 'Quản trị viên'
+}
+
+const roleColors = {
+  'JOB_SEEKER': 'bg-blue-100 text-blue-700',
+  'EMPLOYER': 'bg-green-100 text-green-700',
+  'ADMIN': 'bg-purple-100 text-purple-700'
+}
+
+const currentRoleLabel = computed(() => roleLabels[userRole.value] || '')
+const currentRoleColor = computed(() => roleColors[userRole.value] || 'bg-gray-100 text-gray-700')
 
 const jobDropdownItems = [
   { label: 'Tất cả việc làm', route: '/jobs', icon: '📋' },
@@ -35,6 +52,39 @@ const blogDropdownItems = [
   { label: 'Xu hướng nghề nghiệp', route: '/blog/trends', icon: '📈' },
   { label: 'Chuyện nghề nghiệp', route: '/blog/career', icon: '💡' }
 ]
+
+// Profile dropdown items - Personal Management
+const profileDropdownItems = computed(() => {
+  const role = userRole.value
+  if (role === 'EMPLOYER') {
+    return [
+      { label: 'Quản lý cá nhân', route: '/employer/profile', icon: '👤' },
+      { label: 'Dashboard', route: '/employer/dashboard', icon: '📊' },
+      { label: 'Quản lý tin tuyển dụng', route: '/employer/jobs', icon: '📋' },
+      { label: 'Tìm kiếm ứng viên', route: '/employer/cv-search', icon: '🔍' },
+      { label: 'Quản lý công ty', route: '/employer/company', icon: '🏢' },
+      { label: 'Gói dịch vụ', route: '/employer/subscription', icon: '💎' }
+    ]
+  } else if (role === 'ADMIN') {
+    return [
+      { label: 'Quản lý cá nhân', route: '/admin/dashboard', icon: '👤' },
+      { label: 'Dashboard', route: '/admin/dashboard', icon: '📊' },
+      { label: 'Quản lý người dùng', route: '/admin/users', icon: '👥' },
+      { label: 'Quản lý việc làm', route: '/admin/jobs', icon: '💼' },
+      { label: 'Quản lý công ty', route: '/admin/companies', icon: '🏢' },
+      { label: 'Quản lý blog', route: '/admin/blog', icon: '📝' }
+    ]
+  }
+  // JOB_SEEKER default
+  return [
+    { label: 'Quản lý cá nhân', route: '/profile', icon: '👤' },
+    { label: 'Dashboard', route: '/dashboard', icon: '📊' },
+    { label: 'Quản lý CV', route: '/my-cv', icon: '📄' },
+    { label: 'Đơn ứng tuyển', route: '/my-applications', icon: '📋' },
+    { label: 'Việc làm đã lưu', route: '/saved-jobs', icon: '⭐' },
+    { label: 'Tin nhắn', route: '/messages', icon: '💬' }
+  ]
+})
 
 const handleLogout = () => {
   authStore.logout()
@@ -79,13 +129,8 @@ onUnmounted(() => {
       <div class="flex h-16 items-center justify-between">
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2 group">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#f26b38] to-[#e05a27] group-hover:shadow-lg transition-shadow">
-            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-            </svg>
-          </div>
-          <span class="text-xl font-bold text-gray-900 group-hover:text-[#f26b38] transition-colors">CVKing</span>
+          <span class="text-3xl">💼</span>
+          <span class="text-xl font-bold text-gray-900 group-hover:text-[#f26b38] transition-colors">CV<span class="text-[#f26b38]">King</span></span>
         </router-link>
         
         <!-- Desktop Navigation -->
@@ -269,52 +314,22 @@ onUnmounted(() => {
                   <div class="px-4 py-3 border-b border-gray-100">
                     <p class="text-sm font-medium text-gray-900">{{ userName }}</p>
                     <p class="text-xs text-gray-500">{{ user.value?.email }}</p>
+                    <span v-if="currentRoleLabel" :class="['inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-full', currentRoleColor]">
+                      {{ currentRoleLabel }}
+                    </span>
                   </div>
                   
                   <!-- Menu Items -->
                   <div class="py-1">
                     <router-link 
-                      to="/jobseeker/profile" 
+                      v-for="item in profileDropdownItems" 
+                      :key="item.route" 
+                      :to="item.route" 
                       @click="openDropdown = null"
                       class="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-[#f26b38] flex items-center gap-3 transition-colors"
                     >
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                      </svg>
-                      Quản lý thông tin cá nhân
-                    </router-link>
-                    
-                    <router-link 
-                      to="/jobseeker/dashboard" 
-                      @click="openDropdown = null"
-                      class="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-[#f26b38] flex items-center gap-3 transition-colors"
-                    >
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-                      </svg>
-                      Dashboard
-                    </router-link>
-                    
-                    <router-link 
-                      to="/jobseeker/applications" 
-                      @click="openDropdown = null"
-                      class="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-[#f26b38] flex items-center gap-3 transition-colors"
-                    >
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                      </svg>
-                      Đơn ứng tuyển
-                    </router-link>
-                    
-                    <router-link 
-                      to="/jobseeker/saved-jobs" 
-                      @click="openDropdown = null"
-                      class="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-orange-50 hover:text-[#f26b38] flex items-center gap-3 transition-colors"
-                    >
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                      </svg>
-                      Việc làm đã lưu
+                      <span class="text-lg">{{ item.icon }}</span>
+                      {{ item.label }}
                     </router-link>
                   </div>
                   

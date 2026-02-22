@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const companies = ref([])
 const isLoading = ref(false)
@@ -13,13 +12,19 @@ const loadCompanies = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/admin/companies', {
-      params: {
-        q: searchQuery.value,
-        status: selectedStatus.value
-      }
+    const token = localStorage.getItem('token')
+    const params = {}
+    if (searchQuery.value) params.q = searchQuery.value
+    if (selectedStatus.value) params.status = selectedStatus.value
+    
+    const response = await axios.get('http://localhost:8080/api/admin/companies', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
     })
-    companies.value = response.data
+    
+    if (response.data && response.data.data) {
+      companies.value = response.data.data.companies || []
+    }
   } catch (err) {
     console.error('Error loading companies:', err)
     error.value = 'Tải danh sách công ty thất bại. Vui lòng thử lại.'
@@ -28,24 +33,45 @@ const loadCompanies = async () => {
   }
 }
 
-const updateCompanyStatus = async (companyId, status) => {
+const verifyCompany = async (companyId) => {
   try {
-    await api.put(`/admin/companies/${companyId}/status`, { status })
-    const company = companies.value.find(c => c.id === companyId)
-    if (company) {
-      company.status = status
-      company.statusLabel = status === 'approved' ? 'Đã duyệt' : status === 'pending' ? 'Chờ duyệt' : 'Bị từ chối'
-    }
-    store.addNotification({
-      type: 'success',
-      message: 'Cập nhật trạng thái công ty thành công!'
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/companies/${companyId}/verify`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadCompanies()
+    alert('Duyệt công ty thành công!')
   } catch (err) {
-    console.error('Error updating company status:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Cập nhật trạng thái công ty thất bại. Vui lòng thử lại.'
+    console.error('Error verifying company:', err)
+    alert('Duyệt công ty thất bại.')
+  }
+}
+
+const blockCompany = async (companyId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/companies/${companyId}/block`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadCompanies()
+    alert('Khóa công ty thành công!')
+  } catch (err) {
+    console.error('Error blocking company:', err)
+    alert('Khóa công ty thất bại.')
+  }
+}
+
+const unblockCompany = async (companyId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/companies/${companyId}/unblock`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    loadCompanies()
+    alert('Mở khóa công ty thành công!')
+  } catch (err) {
+    console.error('Error unblocking company:', err)
+    alert('Mở khóa công ty thất bại.')
   }
 }
 
@@ -53,20 +79,16 @@ const deleteCompany = async (companyId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa công ty này không?')) {
     return
   }
-
   try {
-    await api.delete(`/admin/companies/${companyId}`)
-    companies.value = companies.value.filter(company => company.id !== companyId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa công ty thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/admin/companies/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    companies.value = companies.value.filter(c => c.id !== companyId)
+    alert('Xóa công ty thành công!')
   } catch (err) {
     console.error('Error deleting company:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa công ty thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa công ty thất bại.')
   }
 }
 

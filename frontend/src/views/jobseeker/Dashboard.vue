@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const stats = ref({
   totalApplications: 0,
@@ -15,13 +15,26 @@ const isLoading = ref(false)
 const loadDashboardData = async () => {
   isLoading.value = true
   try {
-    // Load user stats
-    const statsResponse = await api.get('/jobseeker/dashboard/stats')
-    stats.value = statsResponse.data
+    const token = localStorage.getItem('token')
+    const user = store.user
     
-    // Load recent jobs
-    const jobsResponse = await api.get('/jobs/recommended')
-    recentJobs.value = jobsResponse.data
+    // Get user ID from user or localStorage
+    const userId = user?.id || 1
+    
+    // Load jobseeker stats
+    const statsResponse = await axios.get(`http://localhost:8080/api/analytics/jobseeker/dashboard?userId=${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (statsResponse.data && statsResponse.data.data) {
+      const data = statsResponse.data.data
+      stats.value = {
+        totalApplications: data.totalApplications || 0,
+        pendingApplications: data.pendingApplications || 0,
+        acceptedApplications: data.acceptedApplications || 0,
+        rejectedApplications: data.rejectedApplications || 0
+      }
+      recentJobs.value = data.recommendedJobs || []
+    }
   } catch (error) {
     console.error('Error loading dashboard data:', error)
   } finally {

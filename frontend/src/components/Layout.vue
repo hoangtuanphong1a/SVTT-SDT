@@ -536,7 +536,7 @@ const toggleMobileMenu = () => {
 
 .header .container {
   padding: 0;
-  max-width: 100%;
+  max-width: 80%;
   width: 100%;
   margin: 0 auto;
 }
@@ -748,7 +748,7 @@ const toggleMobileMenu = () => {
   width: 100%;
   margin: 0 auto;
   padding: 0 4rem;
-  max-width: 1200px;
+  max-width: 80%;
 }
 
 .main .container {
@@ -756,7 +756,7 @@ const toggleMobileMenu = () => {
   margin: 0 auto;
   padding: 0;
   flex: 1;
-  max-width: 100%;
+  max-width: 80%;
 }
 
 .footer .container {

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const stats = ref({
   totalJobs: 0,
@@ -15,13 +15,26 @@ const isLoading = ref(false)
 const loadDashboardData = async () => {
   isLoading.value = true
   try {
-    // Load employer stats
-    const statsResponse = await api.get('/employer/dashboard/stats')
-    stats.value = statsResponse.data
+    const token = localStorage.getItem('token')
+    const user = store.user
     
-    // Load recent applications
-    const appsResponse = await api.get('/employer/applications/recent')
-    recentApplications.value = appsResponse.data
+    // Get company ID from user or localStorage
+    const companyId = user?.companyId || 1
+    
+    // Load employer stats
+    const statsResponse = await axios.get(`http://localhost:8080/api/analytics/employer/dashboard?companyId=${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (statsResponse.data && statsResponse.data.data) {
+      const data = statsResponse.data.data
+      stats.value = {
+        totalJobs: data.totalJobs || 0,
+        activeJobs: data.activeJobs || 0,
+        pendingApplications: data.pendingApplications || 0,
+        totalApplications: data.totalApplications || 0
+      }
+      recentApplications.value = data.recentApplications || []
+    }
   } catch (error) {
     console.error('Error loading dashboard data:', error)
   } finally {

@@ -2,6 +2,8 @@ package org.example.backend.module.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.backend.common.enums.CompanySize;
+import org.example.backend.common.enums.UserRole;
 import org.example.backend.common.exception.AlreadyExistsException;
 import org.example.backend.common.exception.AuthenticationException;
 import org.example.backend.common.exception.ResourceNotFoundException;
@@ -12,6 +14,8 @@ import org.example.backend.module.auth.dto.response.AuthResponse;
 import org.example.backend.module.auth.dto.response.RegisterRequest;
 import org.example.backend.module.auth.entity.User;
 import org.example.backend.module.auth.repository.UserRepository;
+import org.example.backend.module.company.entity.Company;
+import org.example.backend.module.company.repository.CompanyRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +35,7 @@ import java.time.LocalDateTime;
 public class AuthServiceImpl implements AuthService {
     
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -84,18 +89,44 @@ public class AuthServiceImpl implements AuthService {
             throw new AlreadyExistsException("User", "email", request.getEmail());
         }
         
+        // Determine user role from request
+        UserRole userRole = UserRole.JOB_SEEKER;
+        if (request.getRole() != null && "EMPLOYER".equalsIgnoreCase(request.getRole())) {
+            userRole = UserRole.EMPLOYER;
+        }
+        
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
-                .role(org.example.backend.common.enums.UserRole.JOB_SEEKER)
+                .role(userRole)
                 .isVerified(false)
                 .isActive(true)
                 .build();
         
         // Save user first
         User savedUser = userRepository.save(user);
+        
+        // Create company if employer
+        if (userRole == UserRole.EMPLOYER && request.getCompanyInfo() != null) {
+            RegisterRequest.CompanyInfoDto companyInfo = request.getCompanyInfo();
+            Company company = Company.builder()
+                    .userId(savedUser.getId())
+                    .companyName(companyInfo.getCompanyName())
+                    .phone(companyInfo.getCompanyPhone())
+                    .address(companyInfo.getCompanyAddress())
+                    .websiteUrl(companyInfo.getCompanyWebsite())
+                    .industry(companyInfo.getIndustry())
+                    .companySize(parseCompanySize(companyInfo.getCompanySize()))
+                    .email(savedUser.getEmail())
+                    .isVerified(false)
+                    .isActive(true)
+                    .build();
+            
+            Company savedCompany = companyRepository.save(company);
+            log.info("Created company {} for employer user {}", savedCompany.getId(), savedUser.getId());
+        }
         
         // Generate OTP for email verification
         String otp = generateOTP();
@@ -131,6 +162,18 @@ public class AuthServiceImpl implements AuthService {
                 .role(savedUser.getRole().name())
                 .isVerified(savedUser.getIsVerified())
                 .build();
+    }
+    
+    private CompanySize parseCompanySize(String size) {
+        if (size == null || size.isEmpty()) {
+            return null;
+        }
+        try {
+            return CompanySize.valueOf(size.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid company size: {}", size);
+            return null;
+        }
     }
     
     @Override

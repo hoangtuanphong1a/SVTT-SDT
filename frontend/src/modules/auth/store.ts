@@ -27,14 +27,33 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await authApi.login(credentials)
       
-      if (response.data) {
-        const { token: newToken, user: userData } = response.data
+      // response is ApiResponse: { success, message, data }
+      if (response && response.success && response.data) {
+        const authData = response.data
+        const newToken = authData.token
+        
         token.value = newToken
+        
+        // Build user object from response
+        const userData: User = {
+          id: authData.id?.toString() || '',
+          uuid: authData.uuid || '',
+          username: authData.username || '',
+          email: authData.email || '',
+          fullName: authData.fullName || authData.username || '',
+          role: authData.role || 'JOB_SEEKER',
+          isVerified: authData.isVerified || false,
+          isActive: true
+        }
+        
         user.value = userData
 
         // Save to localStorage
         localStorage.setItem('token', newToken)
         localStorage.setItem('user', JSON.stringify(userData))
+
+        console.log('Login success - Role:', userData.role)
+        console.log('User data:', userData)
 
         // Show success notification
         ElNotification({
@@ -44,10 +63,21 @@ export const useAuthStore = defineStore('auth', () => {
           duration: 3000
         })
 
-        // Redirect to home
-        router.push('/')
+        // Redirect based on role
+        if (userData.role === 'ADMIN') {
+          console.log('Redirecting to admin dashboard')
+          router.push('/admin/dashboard')
+        } else if (userData.role === 'EMPLOYER') {
+          console.log('Redirecting to employer dashboard')
+          router.push('/employer/dashboard')
+        } else {
+          console.log('Redirecting to home')
+          router.push('/')
+        }
         
         return userData
+      } else {
+        throw new Error(response?.message || 'Đăng nhập thất bại')
       }
     } catch (err: any) {
       error.value = err.message || 'Đăng nhập thất bại'
@@ -57,16 +87,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function register(userData: RegisterRequest) {
+  async function register(userDataReq: RegisterRequest) {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await authApi.register(userData)
+      const response = await authApi.register(userDataReq)
       
-      if (response.data) {
-        const { token: newToken, user: userRes } = response.data
+      if (response && response.success && response.data) {
+        const authData = response.data
+        const newToken = authData.token
+        
         token.value = newToken
+        
+        // Build user object from response
+        const userRes: User = {
+          id: authData.id?.toString() || '',
+          uuid: authData.uuid || '',
+          username: authData.username || '',
+          email: authData.email || '',
+          fullName: authData.fullName || authData.username || '',
+          role: authData.role || 'JOB_SEEKER',
+          isVerified: authData.isVerified || false,
+          isActive: true
+        }
+        
         user.value = userRes
 
         // Save to localStorage
@@ -85,6 +130,8 @@ export const useAuthStore = defineStore('auth', () => {
         router.push('/login')
         
         return userRes
+      } else {
+        throw new Error(response?.message || 'Đăng ký thất bại')
       }
     } catch (err: any) {
       error.value = err.message || 'Đăng ký thất bại'
@@ -116,10 +163,22 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await authApi.getCurrentUser()
-      if (response.data) {
-        user.value = response.data
-        localStorage.setItem('user', JSON.stringify(response.data))
-        return response.data
+      if (response && response.success && response.data) {
+        const authData = response.data
+        const userData: User = {
+          id: authData.id?.toString() || '',
+          uuid: authData.uuid || '',
+          username: authData.username || '',
+          email: authData.email || '',
+          fullName: authData.fullName || authData.username || '',
+          role: authData.role || 'JOB_SEEKER',
+          isVerified: authData.isVerified || false,
+          isActive: true
+        }
+        
+        user.value = userData
+        localStorage.setItem('user', JSON.stringify(userData))
+        return userData
       }
     } catch (err: any) {
       error.value = err.message || 'Không thể lấy thông tin người dùng'
@@ -135,7 +194,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await authApi.updateProfile(profileData)
-      if (response.data) {
+      if (response && response.success && response.data) {
         user.value = response.data
         localStorage.setItem('user', JSON.stringify(response.data))
         return response.data

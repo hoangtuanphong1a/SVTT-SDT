@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { store } from "../../store";
+import { UserRole } from "../../modules/auth/types";
 import api from "../../services/api";
 
 const router = useRouter();
@@ -9,13 +9,52 @@ const username = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const fullName = ref("");
-const role = ref("JOB_SEEKER");
+const fullName = ref("" );
+const role = ref(UserRole.JOB_SEEKER);
+
+// Company info for employer registration
+const companyName = ref("");
+const companyPhone = ref("");
+const companyAddress = ref("");
+const companyWebsite = ref("");
+const industry = ref("");
+const companySize = ref("");
+
 const isLoading = ref(false);
 const error = ref("");
 const success = ref(false);
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+
+// Check if employer is selected
+const isEmployer = computed(() => role.value === UserRole.EMPLOYER);
+
+// Industry options
+const industryOptions = [
+  "Công nghệ thông tin",
+  "Tài chính - Ngân hàng",
+  "Marketing - Truyền thông",
+  "Giáo dục - Đào tạo",
+  "Y tế - Chăm sóc sức khỏe",
+  "Sản xuất - Công nghiệp",
+  "Bán lẻ - Thương mại",
+  "Bất động sản - Xây dựng",
+  "Du lịch - Khách sạn",
+  "Vận tải - Logistics",
+  "Nhà hàng - Ẩm thực",
+  "Nông nghiệp",
+  "Năng lượng",
+  "Luật - Pháp lý",
+  "Khác"
+];
+
+// Company size options
+const companySizeOptions = [
+  { value: "SMALL", label: "1-50 nhân viên" },
+  { value: "MEDIUM", label: "51-200 nhân viên" },
+  { value: "LARGE", label: "201-1000 nhân viên" },
+  { value: "ENTERPRISE", label: "1000+ nhân viên" }
+];
 
 const register = async () => {
   isLoading.value = true;
@@ -34,13 +73,47 @@ const register = async () => {
     return;
   }
 
+  // Additional validation for employer
+  if (isEmployer.value) {
+    if (!companyName.value.trim()) {
+      error.value = "Vui lòng nhập tên công ty";
+      isLoading.value = false;
+      return;
+    }
+    if (!companyPhone.value.trim()) {
+      error.value = "Vui lòng nhập số điện thoại công ty";
+      isLoading.value = false;
+      return;
+    }
+    if (!companyAddress.value.trim()) {
+      error.value = "Vui lòng nhập địa chỉ công ty";
+      isLoading.value = false;
+      return;
+    }
+  }
+
   try {
-    const response = await api.post("/auth/register", {
+    const requestData = {
       username: username.value,
       email: email.value,
       password: password.value,
       fullName: fullName.value,
-    });
+      role: role.value
+    };
+
+    // Add company info if employer
+    if (isEmployer.value) {
+      requestData.companyInfo = {
+        companyName: companyName.value,
+        companyPhone: companyPhone.value,
+        companyAddress: companyAddress.value,
+        companyWebsite: companyWebsite.value || undefined,
+        industry: industry.value || undefined,
+        companySize: companySize.value || undefined
+      };
+    }
+
+    const response = await api.post("/auth/register", requestData);
 
     const { success: isSuccess, data, message } = response.data;
 
@@ -71,7 +144,7 @@ const register = async () => {
         <div class="illustration-content">
           <div class="illustration-icon">💼</div>
           <h2>Chào mừng đến với</h2>
-          <h1>Việc<span class="highlight">Làm</span>Plus</h1>
+          <h1>CV<span class="highlight">King</span></h1>
           <p>Nền tảng tuyển dụng hàng đầu Việt Nam</p>
           <div class="features">
             <div class="feature-item">✓ Hàng ngàn việc làm hấp dẫn</div>
@@ -87,7 +160,7 @@ const register = async () => {
           <div class="brand-logo">
             <span class="logo-icon">💼</span>
             <span class="logo-text"
-              >Việc<span class="logo-accent">Làm</span>Plus</span
+              >CV<span class="logo-accent">King</span></span
             >
           </div>
 
@@ -97,6 +170,15 @@ const register = async () => {
           </div>
 
           <form @submit.prevent="register" class="register-form">
+            <!-- Role Selection -->
+            <div class="form-group">
+              <select v-model="role" required>
+                <option :value="UserRole.JOB_SEEKER">Ứng viên tìm việc</option>
+                <option :value="UserRole.EMPLOYER">Nhà tuyển dụng</option>
+              </select>
+            </div>
+
+            <!-- Basic Info -->
             <div class="form-group">
               <input
                 v-model="username"
@@ -110,7 +192,7 @@ const register = async () => {
               <input
                 v-model="fullName"
                 type="text"
-                placeholder="Họ và tên"
+                :placeholder="isEmployer ? 'Họ tên ngườI đại diện' : 'Họ và tên'"
                 required
               />
             </div>
@@ -156,11 +238,68 @@ const register = async () => {
               </button>
             </div>
 
-            <div class="form-group">
-              <select v-model="role" required>
-                <option value="JOB_SEEKER">Ứng viên tìm việc</option>
-                <option value="EMPLOYER">Nhà tuyển dụng</option>
-              </select>
+            <!-- Employer Company Info Section -->
+            <div v-if="isEmployer" class="employer-section">
+              <div class="section-divider">
+                <span>Thông tin công ty</span>
+              </div>
+
+              <div class="form-group">
+                <input
+                  v-model="companyName"
+                  type="text"
+                  placeholder="Tên công ty *"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <input
+                  v-model="companyPhone"
+                  type="tel"
+                  placeholder="Số điện thoại công ty *"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <input
+                  v-model="companyAddress"
+                  type="text"
+                  placeholder="Địa chỉ công ty *"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <input
+                  v-model="companyWebsite"
+                  type="url"
+                  placeholder="Website công ty (tùy chọn)"
+                />
+              </div>
+
+              <div class="form-group">
+                <select v-model="industry">
+                  <option value="">Lĩnh vực hoạt động (tùy chọn)</option>
+                  <option v-for="ind in industryOptions" :key="ind" :value="ind">
+                    {{ ind }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <select v-model="companySize">
+                  <option value="">Quy mô công ty (tùy chọn)</option>
+                  <option
+                    v-for="size in companySizeOptions"
+                    :key="size.value"
+                    :value="size.value"
+                  >
+                    {{ size.label }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <div v-if="error" class="error-message">
@@ -366,8 +505,11 @@ const register = async () => {
 .form-section {
   padding: 3rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 4rem;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .form-card {
@@ -475,6 +617,60 @@ const register = async () => {
 
 .toggle-password:hover {
   opacity: 1;
+}
+
+/* Employer Section */
+.employer-section {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 0.5rem 0;
+  border: 2px solid #fcd34d;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #fcd34d;
+}
+
+.section-divider span {
+  padding: 0 0.75rem;
+}
+
+.employer-section .form-group input,
+.employer-section .form-group select {
+  background: white;
+  border-color: #fcd34d;
+}
+
+.employer-section .form-group input:focus,
+.employer-section .form-group select:focus {
+  border-color: #ff8c42;
+  box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.15);
 }
 
 .error-message {
@@ -628,16 +824,20 @@ const register = async () => {
 
   .form-section {
     padding: 2rem 1.5rem;
+    padding-top: 3rem;
+    max-height: none;
   }
 }
 
 @media (max-width: 480px) {
   .register-page {
     padding: 1rem;
+    padding-top: 2rem;
   }
 
   .form-section {
     padding: 1.5rem 1rem;
+    padding-top: 2rem;
   }
 
   .form-header h2 {
@@ -659,6 +859,10 @@ const register = async () => {
   .social-btn {
     width: 44px;
     height: 44px;
+  }
+
+  .employer-section {
+    padding: 1rem;
   }
 }
 </style>

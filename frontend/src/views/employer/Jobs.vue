@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const jobs = ref([])
 const isLoading = ref(false)
@@ -11,8 +11,13 @@ const loadJobs = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/employer/jobs')
-    jobs.value = response.data
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/jobs', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      jobs.value = response.data.data.content || response.data.data || []
+    }
   } catch (err) {
     console.error('Error loading jobs:', err)
     error.value = 'Tải danh sách việc làm thất bại. Vui lòng thử lại.'
@@ -27,18 +32,15 @@ const deleteJob = async (jobId) => {
   }
 
   try {
-    await api.delete(`/employer/jobs/${jobId}`)
-    jobs.value = jobs.value.filter(job => job.id !== jobId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa việc làm thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/jobs/${jobId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    jobs.value = jobs.value.filter(job => job.id !== jobId)
+    alert('Xóa việc làm thành công!')
   } catch (err) {
     console.error('Error deleting job:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa việc làm thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa việc làm thất bại.')
   }
 }
 

@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const savedJobs = ref([])
 const isLoading = ref(false)
@@ -11,8 +10,13 @@ const loadSavedJobs = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/jobseeker/saved-jobs')
-    savedJobs.value = response.data
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/saved-jobs', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      savedJobs.value = response.data.data.content || response.data.data || []
+    }
   } catch (err) {
     console.error('Error loading saved jobs:', err)
     error.value = 'Tải danh sách việc làm đã lưu thất bại. Vui lòng thử lại.'
@@ -23,18 +27,15 @@ const loadSavedJobs = async () => {
 
 const unsaveJob = async (jobId) => {
   try {
-    await api.delete(`/jobseeker/saved-jobs/${jobId}`)
-    savedJobs.value = savedJobs.value.filter(job => job.id !== jobId)
-    store.addNotification({
-      type: 'success',
-      message: 'Bỏ lưu việc làm thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/saved-jobs/${jobId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    savedJobs.value = savedJobs.value.filter(job => job.id !== jobId)
+    alert('Bỏ lưu việc làm thành công!')
   } catch (err) {
     console.error('Error unsave job:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Bỏ lưu việc làm thất bại. Vui lòng thử lại.'
-    })
+    alert('Bỏ lưu việc làm thất bại.')
   }
 }
 

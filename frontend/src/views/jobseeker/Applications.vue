@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const applications = ref([])
 const isLoading = ref(false)
@@ -11,8 +10,13 @@ const loadApplications = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/jobseeker/applications')
-    applications.value = response.data
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/applications', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      applications.value = response.data.data.content || response.data.data || []
+    }
   } catch (err) {
     console.error('Error loading applications:', err)
     error.value = 'Tải danh sách ứng tuyển thất bại. Vui lòng thử lại.'
@@ -25,20 +29,16 @@ const cancelApplication = async (applicationId) => {
   if (!confirm('Bạn có chắc chắn muốn hủy đơn ứng tuyển này không?')) {
     return
   }
-
   try {
-    await api.delete(`/jobseeker/applications/${applicationId}`)
-    applications.value = applications.value.filter(app => app.id !== applicationId)
-    store.addNotification({
-      type: 'success',
-      message: 'Hủy đơn ứng tuyển thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/applications/${applicationId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    applications.value = applications.value.filter(app => app.id !== applicationId)
+    alert('Hủy đơn ứng tuyển thành công!')
   } catch (err) {
     console.error('Error canceling application:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Hủy đơn ứng tuyển thất bại. Vui lòng thử lại.'
-    })
+    alert('Hủy đơn ứng tuyển thất bại.')
   }
 }
 

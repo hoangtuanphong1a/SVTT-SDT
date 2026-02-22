@@ -1,13 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const company = ref({
-  name: '',
+  id: null,
+  companyName: '',
   description: '',
   industry: '',
-  size: '',
+  companySize: '',
   website: '',
   address: '',
   phone: '',
@@ -23,10 +23,15 @@ const loadCompany = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/employer/company')
-    company.value = response.data
-  } catch (error) {
-    console.error('Error loading company:', error)
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/companies/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      company.value = response.data.data
+    }
+  } catch (err) {
+    console.error('Error loading company:', err)
   } finally {
     isLoading.value = false
   }
@@ -38,13 +43,13 @@ const updateCompany = async () => {
   success.value = false
   
   try {
-    await api.put('/employer/company', company.value)
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/companies/${company.value.id}`, company.value, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     success.value = true
     isEditing.value = false
-    store.addNotification({
-      type: 'success',
-      message: 'Cập nhật thông tin công ty thành công!'
-    })
+    alert('Cập nhật thông tin công ty thành công!')
   } catch (err) {
     console.error('Error updating company:', err)
     error.value = err.response?.data?.message || 'Cập nhật thất bại. Vui lòng thử lại.'

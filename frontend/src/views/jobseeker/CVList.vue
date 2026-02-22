@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const cvs = ref([])
 const isLoading = ref(false)
@@ -11,8 +10,13 @@ const loadCVs = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/jobseeker/cvs')
-    cvs.value = response.data
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/cvs', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      cvs.value = response.data.data.content || response.data.data || []
+    }
   } catch (err) {
     console.error('Error loading CVs:', err)
     error.value = 'Tải danh sách CV thất bại. Vui lòng thử lại.'
@@ -25,20 +29,16 @@ const deleteCV = async (cvId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa CV này không?')) {
     return
   }
-
   try {
-    await api.delete(`/jobseeker/cvs/${cvId}`)
-    cvs.value = cvs.value.filter(cv => cv.id !== cvId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa CV thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/cvs/${cvId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    cvs.value = cvs.value.filter(cv => cv.id !== cvId)
+    alert('Xóa CV thành công!')
   } catch (err) {
     console.error('Error deleting CV:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa CV thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa CV thất bại.')
   }
 }
 

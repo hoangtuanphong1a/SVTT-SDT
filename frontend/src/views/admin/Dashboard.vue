@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const stats = ref({
   totalUsers: 0,
@@ -19,8 +19,22 @@ const loadStats = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/admin/stats')
-    stats.value = response.data
+    const token = localStorage.getItem('token')
+    const response = await axios.get('http://localhost:8080/api/analytics/admin/dashboard', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.data && response.data.data) {
+      const data = response.data.data
+      stats.value = {
+        totalUsers: data.totalUsers || 0,
+        totalCompanies: data.totalCompanies || 0,
+        totalJobs: data.totalJobs || 0,
+        totalApplications: data.totalApplications || 0,
+        activeUsers: data.activeUsers || 0,
+        pendingCompanies: data.pendingCompanies || 0,
+        recentActivity: data.recentActivity || []
+      }
+    }
   } catch (err) {
     console.error('Error loading stats:', err)
     error.value = 'Tải thông tin thống kê thất bại. Vui lòng thử lại.'

@@ -2,10 +2,16 @@ import type { LoginRequest, RegisterRequest, User } from './types'
 import type { ApiResponse } from '@/shared/api/types'
 import axiosInstance from '@/shared/api/http'
 
-// Login API
-export const login = async (credentials: LoginRequest): Promise<ApiResponse<any>> => {
-  const response = await axiosInstance.post<ApiResponse<any>>('/auth/login', credentials)
+// Login API - Backend trả về ApiResponse nên cần lấy response.data để có ApiResponse
+export const login = async (credentials: LoginRequest): Promise<any> => {
+  const response = await axiosInstance.post('/auth/login', credentials)
+  // Backend trả về { success, message, data } - trả về toàn bộ response
   return response.data
+}
+
+// Get data from response - helper
+export const getData = (response: any) => {
+  return response?.data
 }
 
 // Register API (general)

@@ -26,6 +26,7 @@ import Companies from '@/views/admin/Companies.vue'
 import BlogAdmin from '@/views/admin/Blog.vue'
 import EmployerDashboard from '@/views/employer/Dashboard.vue'
 import EmployerProfile from '@/views/employer/Profile.vue'
+import EmployerCompany from '@/views/employer/Company.vue'
 import EmployerJobs from '@/views/employer/Jobs.vue'
 import EmployerJobCreate from '@/views/employer/JobCreate.vue'
 import EmployerJobEdit from '@/views/employer/JobEdit.vue'
@@ -42,6 +43,7 @@ import JobseekerCVCreate from '@/views/jobseeker/CVCreate.vue'
 import JobseekerCVEdit from '@/views/jobseeker/CVEdit.vue'
 
 const routes = [
+  // ===== 1. TRANG CÔNG KHAI =====
   {
     path: '/',
     name: 'Home',
@@ -138,6 +140,114 @@ const routes = [
     name: 'About',
     component: About
   },
+
+  // ===== 2. DASHBOARD JOB SEEKER =====
+  {
+    path: '/profile',
+    name: 'JobseekerProfile',
+    component: JobseekerProfile,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/dashboard',
+    name: 'JobseekerDashboard',
+    component: JobseekerDashboard,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/my-cv',
+    name: 'JobseekerCVList',
+    component: JobseekerCVList,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/my-cv/create',
+    name: 'JobseekerCVCreate',
+    component: JobseekerCVCreate,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/my-cv/:id/edit',
+    name: 'JobseekerCVEdit',
+    component: JobseekerCVEdit,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/my-applications',
+    name: 'JobseekerApplications',
+    component: JobseekerApplications,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/saved-jobs',
+    name: 'JobseekerSavedJobs',
+    component: JobseekerSavedJobs,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+  {
+    path: '/messages',
+    name: 'JobseekerMessages',
+    component: JobseekerMessages,
+    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
+  },
+
+  // ===== 3. DASHBOARD EMPLOYER =====
+  {
+    path: '/employer/dashboard',
+    name: 'EmployerDashboard',
+    component: EmployerDashboard,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/company',
+    name: 'EmployerCompany',
+    component: EmployerCompany,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs',
+    name: 'EmployerJobs',
+    component: EmployerJobs,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs/create',
+    name: 'EmployerJobCreate',
+    component: EmployerJobCreate,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs/:id/edit',
+    name: 'EmployerJobEdit',
+    component: EmployerJobEdit,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/jobs/:id/applicants',
+    name: 'EmployerCandidates',
+    component: EmployerCandidates,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/cv-search',
+    name: 'EmployerCVSearch',
+    component: EmployerCVSearch,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/subscription',
+    name: 'EmployerSubscription',
+    component: EmployerSubscription,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+  {
+    path: '/employer/profile',
+    name: 'EmployerProfile',
+    component: EmployerProfile,
+    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
+  },
+
+  // ===== 4. ADMIN DASHBOARD =====
   {
     path: '/admin/dashboard',
     name: 'AdminDashboard',
@@ -174,102 +284,8 @@ const routes = [
     component: BlogAdmin,
     meta: { requiresAuth: true, requiresRole: 'ADMIN' }
   },
-  {
-    path: '/employer/dashboard',
-    name: 'EmployerDashboard',
-    component: EmployerDashboard,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/profile',
-    name: 'EmployerProfile',
-    component: EmployerProfile,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/jobs',
-    name: 'EmployerJobs',
-    component: EmployerJobs,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/jobs/create',
-    name: 'EmployerJobCreate',
-    component: EmployerJobCreate,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/jobs/:id/edit',
-    name: 'EmployerJobEdit',
-    component: EmployerJobEdit,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/candidates',
-    name: 'EmployerCandidates',
-    component: EmployerCandidates,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/cv-search',
-    name: 'EmployerCVSearch',
-    component: EmployerCVSearch,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/employer/subscription',
-    name: 'EmployerSubscription',
-    component: EmployerSubscription,
-    meta: { requiresAuth: true, requiresRole: 'EMPLOYER' }
-  },
-  {
-    path: '/jobseeker/dashboard',
-    name: 'JobseekerDashboard',
-    component: JobseekerDashboard,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/profile',
-    name: 'JobseekerProfile',
-    component: JobseekerProfile,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/applications',
-    name: 'JobseekerApplications',
-    component: JobseekerApplications,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/saved-jobs',
-    name: 'JobseekerSavedJobs',
-    component: JobseekerSavedJobs,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/messages',
-    name: 'JobseekerMessages',
-    component: JobseekerMessages,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/cv-list',
-    name: 'JobseekerCVList',
-    component: JobseekerCVList,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/cv/create',
-    name: 'JobseekerCVCreate',
-    component: JobseekerCVCreate,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
-  {
-    path: '/jobseeker/cv/:id/edit',
-    name: 'JobseekerCVEdit',
-    component: JobseekerCVEdit,
-    meta: { requiresAuth: true, requiresRole: 'JOBSEEKER' }
-  },
+
+  // ===== 404 =====
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -287,11 +303,21 @@ router.beforeEach((to, from, next) => {
   const requiresRole = to.meta.requiresRole
 
   if (requiresAuth) {
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem('user') || 'null')
     if (!user) {
       next('/login')
-    } else if (requiresRole && user.role !== requiresRole) {
-      next('/unauthorized')
+    } else if (requiresRole) {
+      // ADMIN có thể truy cập tất cả các trang
+      // EMPLOYER có thể truy cập employer và một số trang jobseeker
+      // JOBSEEKER có thể truy cập jobseeker
+      const userRole = user.role
+      if (userRole === 'ADMIN') {
+        next() // Admin có toàn quyền
+      } else if (userRole !== requiresRole) {
+        next('/unauthorized')
+      } else {
+        next()
+      }
     } else {
       next()
     }

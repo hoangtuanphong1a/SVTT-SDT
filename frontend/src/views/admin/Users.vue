@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const users = ref([])
 const isLoading = ref(false)
@@ -13,13 +13,19 @@ const loadUsers = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/admin/users', {
-      params: {
-        q: searchQuery.value,
-        role: selectedRole.value
-      }
+    const token = localStorage.getItem('token')
+    const params = {}
+    if (searchQuery.value) params.q = searchQuery.value
+    if (selectedRole.value) params.role = selectedRole.value
+    
+    const response = await axios.get('http://localhost:8080/api/admin/users', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
     })
-    users.value = response.data
+    
+    if (response.data && response.data.data) {
+      users.value = response.data.data.users || []
+    }
   } catch (err) {
     console.error('Error loading users:', err)
     error.value = 'Tải danh sách người dùng thất bại. Vui lòng thử lại.'
@@ -34,19 +40,53 @@ const deleteUser = async (userId) => {
   }
 
   try {
-    await api.delete(`/admin/users/${userId}`)
-    users.value = users.value.filter(user => user.id !== userId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa người dùng thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/admin/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    users.value = users.value.filter(user => user.id !== userId)
+    alert('Xóa người dùng thành công!')
   } catch (err) {
     console.error('Error deleting user:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa người dùng thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa người dùng thất bại. Vui lòng thử lại.')
   }
+}
+
+const blockUser = async (userId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/users/${userId}/block`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    loadUsers()
+    alert('Khóa người dùng thành công!')
+  } catch (err) {
+    console.error('Error blocking user:', err)
+    alert('Khóa người dùng thất bại.')
+  }
+}
+
+const unblockUser = async (userId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/users/${userId}/unblock`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    loadUsers()
+    alert('Mở khóa người dùng thành công!')
+  } catch (err) {
+    console.error('Error unblocking user:', err)
+    alert('Mở khóa người dùng thất bại.')
+  }
+}
+
+const getRoleLabel = (role) => {
+  const labels = {
+    'ADMIN': 'Quản trị viên',
+    'EMPLOYER': 'Nhà tuyển dụng',
+    'JOB_SEEKER': 'Ứng viên'
+  }
+  return labels[role] || role
 }
 
 const searchUsers = () => {

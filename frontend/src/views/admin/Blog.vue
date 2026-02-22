@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const posts = ref([])
 const isLoading = ref(false)
@@ -13,13 +12,19 @@ const loadPosts = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/admin/blog', {
-      params: {
-        q: searchQuery.value,
-        status: selectedStatus.value
-      }
+    const token = localStorage.getItem('token')
+    const params = {}
+    if (searchQuery.value) params.q = searchQuery.value
+    if (selectedStatus.value) params.status = selectedStatus.value
+    
+    const response = await axios.get('http://localhost:8080/api/admin/blog', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
     })
-    posts.value = response.data
+    
+    if (response.data && response.data.data) {
+      posts.value = response.data.data.posts || []
+    }
   } catch (err) {
     console.error('Error loading posts:', err)
     error.value = 'Tải danh sách bài viết thất bại. Vui lòng thử lại.'
@@ -28,24 +33,31 @@ const loadPosts = async () => {
   }
 }
 
-const updatePostStatus = async (postId, status) => {
+const publishPost = async (postId) => {
   try {
-    await api.put(`/admin/blog/${postId}/status`, { status })
-    const post = posts.value.find(p => p.id === postId)
-    if (post) {
-      post.status = status
-      post.statusLabel = status === 'published' ? 'Đã đăng' : status === 'draft' ? 'Nháp' : 'Bị từ chối'
-    }
-    store.addNotification({
-      type: 'success',
-      message: 'Cập nhật trạng thái bài viết thành công!'
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/blog/${postId}/publish`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadPosts()
+    alert('Đăng bài viết thành công!')
   } catch (err) {
-    console.error('Error updating post status:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Cập nhật trạng thái bài viết thất bại. Vui lòng thử lại.'
+    console.error('Error publishing post:', err)
+    alert('Đăng bài viết thất bại.')
+  }
+}
+
+const rejectPost = async (postId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/blog/${postId}/reject`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadPosts()
+    alert('Từ chối bài viết thành công!')
+  } catch (err) {
+    console.error('Error rejecting post:', err)
+    alert('Từ chối bài viết thất bại.')
   }
 }
 
@@ -53,20 +65,16 @@ const deletePost = async (postId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
     return
   }
-
   try {
-    await api.delete(`/admin/blog/${postId}`)
-    posts.value = posts.value.filter(post => post.id !== postId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa bài viết thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/admin/blog/${postId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    posts.value = posts.value.filter(p => p.id !== postId)
+    alert('Xóa bài viết thành công!')
   } catch (err) {
     console.error('Error deleting post:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa bài viết thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa bài viết thất bại.')
   }
 }
 
@@ -147,8 +155,8 @@ onMounted(() => {
           </div>
 
           <div v-if="post.status === 'draft'" class="post-actions-bottom">
-            <button @click="updatePostStatus(post.id, 'published')" class="btn btn-primary">Đăng bài</button>
-            <button @click="updatePostStatus(post.id, 'rejected')" class="btn btn-danger">Từ chối</button>
+            <button @click="publishPost(post.id)" class="btn btn-primary">Đăng bài</button>
+            <button @click="rejectPost(post.id)" class="btn btn-danger">Từ chối</button>
           </div>
         </div>
       </div>

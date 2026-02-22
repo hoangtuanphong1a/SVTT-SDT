@@ -2,11 +2,14 @@ package org.example.backend.module.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.common.response.ApiResponse;
+import org.example.backend.common.security.SecurityUser;
 import org.example.backend.module.auth.dto.request.AuthRequest;
 import org.example.backend.module.auth.dto.response.AuthResponse;
 import org.example.backend.module.auth.dto.response.RegisterRequest;
 import org.example.backend.module.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -86,8 +89,23 @@ public class AuthController {
     }
     
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Object>> getCurrentUser() {
-        // Implement get current user logic
+    public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
+            SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+            
+            AuthResponse response = AuthResponse.builder()
+                    .id(securityUser.getId())
+                    .username(securityUser.getUsername())
+                    .email(securityUser.getEmail())
+                    .role(securityUser.getRole().name())
+                    .isVerified(true)
+                    .build();
+            
+            return ResponseEntity.ok(ApiResponse.success("Current user", response));
+        }
+        
         return ResponseEntity.ok(ApiResponse.success("Current user", null));
     }
     

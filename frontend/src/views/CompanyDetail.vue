@@ -1,456 +1,342 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { store } from '../store'
-import api from '../services/api'
+import { ref } from 'vue'
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
-const route = useRoute()
-const company = ref(null)
-const jobs = ref([])
-const isLoading = ref(false)
+// Mock company data
+const company = ref({
+  id: 1,
+  name: 'FPT Software',
+  logo: 'FPT',
+  industry: 'Công nghệ thông tin',
+  size: '25.000+ nhân viên',
+  location: 'Hà Nội',
+  address: 'Tòa nhà FPT, Phạm Hùng, Cầu Giấy, Hà Nội',
+  website: 'https://fptsoftware.com',
+  description: `FPT Software là công ty công nghệ thông tin hàng đầu Việt Nam, thành lập năm 1999. Với hơn 25.000 nhân viên, chúng tôi cung cấp các giải pháp công nghệ toàn diện cho khách hàng trên toàn thế giới.
 
-const loadCompany = async () => {
-  isLoading.value = true
-  try {
-    const response = await api.get(`/companies/${route.params.id}`)
-    company.value = response.data
-    
-    // Load jobs from this company
-    const jobsResponse = await api.get(`/companies/${route.params.id}/jobs`)
-    jobs.value = jobsResponse.data
-  } catch (error) {
-    console.error('Error loading company:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  loadCompany()
+FPT Software có mạng lưới chi nhánh tại 27 quốc gia với hơn 60 văn phòng, phục vụ khách hàng tại Nhật Bản, Hoa Kỳ, châu Âu, Trung Đông, châu Úc và các thị trường khác.`,
+  founded: 1999,
+  revenue: 'Hơn 1.5 tỷ USD',
+  benefits: [
+    'Lương tháng 13',
+    'Bảo hiểm xã hội đầy đủ',
+    'Phụ cấp ăn trưa',
+    'Hỗ trợ di chuyển',
+    'Đào tạo chuyên sâu',
+    'Cơ hội đi nước ngoài',
+    'Lịch nghỉ phép linh hoạt',
+    'Công việc ổn định'
+  ],
+  culture: [
+    'Môi trường năng động',
+    'Văn hóa sáng tạo',
+    'Công bằng, minh bạch',
+    'Phát triển nghề nghiệp',
+    'Cân bằng công việc - cuộc sống'
+  ],
+  workingTime: 'Thứ 2 - Thứ 6 (8h/ngày)',
+  jobsCount: 127
 })
+
+const jobs = ref([
+  {
+    id: 1,
+    title: 'Senior Frontend Developer',
+    location: 'Hà Nội',
+    salary: '25-35 triệu',
+    type: 'Full-time',
+    level: 'Senior',
+    tags: ['ReactJS', 'TypeScript'],
+    posted: '2 giờ trước',
+    featured: true
+  },
+  {
+    id: 2,
+    title: 'Backend Developer (Java)',
+    location: 'Hà Nội',
+    salary: '20-30 triệu',
+    type: 'Full-time',
+    level: 'Middle',
+    tags: ['Java', 'Spring Boot'],
+    posted: '5 giờ trước',
+    featured: false
+  },
+  {
+    id: 3,
+    title: 'DevOps Engineer',
+    location: 'Hồ Chí Minh',
+    salary: '22-32 triệu',
+    type: 'Full-time',
+    level: 'Middle',
+    tags: ['AWS', 'Docker', 'Kubernetes'],
+    posted: '1 ngày trước',
+    featured: true
+  }
+])
+
+const photos = ref([
+  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&h=400&fit=crop'
+])
+
+const isFollowing = ref(false)
+const activeTab = ref('overview')
+
+const toggleFollow = () => {
+  isFollowing.value = !isFollowing.value
+}
 </script>
 
 <template>
-  <div class="company-detail">
-    <div class="container">
-      <div v-if="isLoading" class="loading">Đang tải...</div>
-      
-      <div v-else-if="!company" class="not-found">
-        <h2>Không tìm thấy công ty</h2>
-        <p>Công ty bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
-        <router-link to="/companies" class="btn btn-primary">Quay lại danh sách công ty</router-link>
-      </div>
-
-      <div v-else class="company-content">
-        <!-- Company Header -->
-        <div class="company-header">
-          <div class="company-info">
-            <img :src="company.logo" :alt="company.name" class="company-logo" />
-            <div class="company-details">
-              <h1>{{ company.name }}</h1>
-              <p class="industry">{{ company.industry }}</p>
-              <div class="company-meta">
-                <span class="size">{{ company.size }}</span>
-                <span class="location">{{ company.location }}</span>
-                <span class="website">
-                  <a :href="company.website" target="_blank">{{ company.website }}</a>
-                </span>
-              </div>
+  <div class="min-h-screen bg-gray-50">
+    <Header />
+    
+    <!-- Company Header -->
+    <section class="bg-white border-b border-gray-200">
+      <div class="container mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto">
+          <!-- Breadcrumb -->
+          <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+            <router-link to="/" class="hover:text-[#f26b38]">Trang chủ</router-link>
+            <span>/</span>
+            <router-link to="/companies" class="hover:text-[#f26b38]">Công ty</router-link>
+            <span>/</span>
+            <span class="text-gray-700">{{ company.name }}</span>
+          </nav>
+          
+          <div class="flex flex-col md:flex-row gap-6 items-start">
+            <!-- Company Logo -->
+            <div class="w-24 h-24 rounded-xl bg-gradient-to-br from-[#f26b38] to-[#e05a27] flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+              {{ company.logo }}
             </div>
-          </div>
-          <div class="company-actions">
-            <a :href="company.website" target="_blank" class="btn btn-primary">Truy cập website</a>
-            <button class="btn btn-outline">Theo dõi công ty</button>
-          </div>
-        </div>
-
-        <!-- Company Details -->
-        <div class="company-details">
-          <div class="details-grid">
-            <div class="detail-section">
-              <h3>Giới thiệu công ty</h3>
-              <div class="content">
-                <p v-for="desc in company.description.split('\n')" :key="desc">{{ desc }}</p>
-              </div>
-            </div>
-
-            <div class="detail-section">
-              <h3>Thông tin chi tiết</h3>
-              <div class="content">
-                <div class="info-grid">
-                  <div class="info-item">
-                    <strong>Địa chỉ:</strong>
-                    <span>{{ company.address }}</span>
-                  </div>
-                  <div class="info-item">
-                    <strong>Quy mô:</strong>
-                    <span>{{ company.size }}</span>
-                  </div>
-                  <div class="info-item">
-                    <strong>Thành lập:</strong>
-                    <span>{{ company.foundedYear }}</span>
-                  </div>
-                  <div class="info-item">
-                    <strong>Doanh thu:</strong>
-                    <span>{{ company.revenue }}</span>
+            
+            <!-- Company Info -->
+            <div class="flex-1">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h1 class="text-3xl font-bold mb-2">{{ company.name }}</h1>
+                  <p class="text-[#f26b38] font-medium mb-3">{{ company.industry }}</p>
+                  <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <span class="flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      </svg>
+                      {{ company.location }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      </svg>
+                      {{ company.size }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                      </svg>
+                      Thành lập {{ company.founded }}
+                    </span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Company Culture -->
-          <div class="culture-section">
-            <h3>Văn hóa công ty</h3>
-            <div class="culture-grid">
-              <div v-for="culture in company.culture" :key="culture" class="culture-item">
-                <span class="culture-icon">✓</span>
-                <span class="culture-text">{{ culture }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Benefits -->
-          <div class="benefits-section">
-            <h3>Phúc lợi</h3>
-            <div class="benefits-grid">
-              <div v-for="benefit in company.benefits" :key="benefit" class="benefit-item">
-                <span class="benefit-icon">🎁</span>
-                <span class="benefit-text">{{ benefit }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Jobs from this company -->
-          <div class="jobs-section" v-if="jobs.length > 0">
-            <h3>Việc làm tại {{ company.name }}</h3>
-            <div class="jobs-grid">
-              <div v-for="job in jobs" :key="job.id" class="job-card">
-                <div class="job-header">
-                  <h3>{{ job.title }}</h3>
-                  <span class="salary">{{ job.salary }}</span>
-                </div>
-                <div class="job-meta">
-                  <span class="type">{{ job.type }}</span>
-                  <span class="experience">{{ job.experience }}</span>
-                  <span class="location">{{ job.location }}</span>
-                </div>
-                <p class="job-description">{{ job.description }}</p>
-                <div class="job-actions">
-                  <router-link :to="`/jobs/${job.id}`" class="btn btn-primary">Xem chi tiết</router-link>
-                  <button v-if="store.isAuthenticated" class="btn btn-outline">Ứng tuyển</button>
+                
+                <div class="flex gap-2">
+                  <button 
+                    @click="toggleFollow"
+                    class="px-4 py-2 border rounded-lg flex items-center gap-2 transition-colors"
+                    :class="isFollowing ? 'bg-[#f26b38] text-white border-[#f26b38]' : 'border-gray-300 hover:border-[#f26b38] hover:text-[#f26b38]'"
+                  >
+                    <svg class="h-5 w-5" :fill="isFollowing ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                    {{ isFollowing ? 'Đã theo dõi' : 'Theo dõi' }}
+                  </button>
+                  <a 
+                    :href="company.website" 
+                    target="_blank"
+                    class="px-4 py-2 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg transition-colors"
+                  >
+                    Truy cập website
+                  </a>
                 </div>
               </div>
-            </div>
-            <div class="view-all-jobs">
-              <router-link :to="`/jobs?company=${company.id}`" class="btn btn-outline">Xem tất cả việc làm</router-link>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="bg-white border-b border-gray-200 sticky top-16 z-30">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+          <div class="flex gap-8">
+            <button 
+              @click="activeTab = 'overview'"
+              class="py-4 font-medium transition-colors border-b-2"
+              :class="activeTab === 'overview' ? 'border-[#f26b38] text-[#f26b38]' : 'border-transparent text-gray-600 hover:text-gray-900'"
+            >
+              Tổng quan
+            </button>
+            <button 
+              @click="activeTab = 'jobs'"
+              class="py-4 font-medium transition-colors border-b-2"
+              :class="activeTab === 'jobs' ? 'border-[#f26b38] text-[#f26b38]' : 'border-transparent text-gray-600 hover:text-gray-900'"
+            >
+              Việc làm ({{ company.jobsCount }})
+            </button>
+            <button 
+              @click="activeTab = 'photos'"
+              class="py-4 font-medium transition-colors border-b-2"
+              :class="activeTab === 'photos' ? 'border-[#f26b38] text-[#f26b38]' : 'border-transparent text-gray-600 hover:text-gray-900'"
+            >
+              Hình ảnh
+            </button>
+            <button 
+              @click="activeTab = 'reviews'"
+              class="py-4 font-medium transition-colors border-b-2"
+              :class="activeTab === 'reviews' ? 'border-[#f26b38] text-[#f26b38]' : 'border-transparent text-gray-600 hover:text-gray-900'"
+            >
+              Đánh giá
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+          <!-- Overview Tab -->
+          <div v-show="activeTab === 'overview'" class="grid lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+              <!-- About -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h2 class="text-xl font-bold mb-4">Giới thiệu công ty</h2>
+                <div class="text-gray-600 whitespace-pre-line">{{ company.description }}</div>
+              </div>
+              
+              <!-- Benefits -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h2 class="text-xl font-bold mb-4">Phúc lợi</h2>
+                <div class="grid grid-cols-2 gap-3">
+                  <div v-for="benefit in company.benefits" :key="benefit" class="flex items-center gap-2">
+                    <span class="text-[#f26b38]">✓</span>
+                    <span class="text-gray-700">{{ benefit }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Culture -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h2 class="text-xl font-bold mb-4">Văn hóa công ty</h2>
+                <div class="grid grid-cols-2 gap-3">
+                  <div v-for="item in company.culture" :key="item" class="flex items-center gap-2">
+                    <span class="text-[#f26b38]">★</span>
+                    <span class="text-gray-700">{{ item }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+              <!-- Quick Info -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-bold mb-4">Thông tin nhanh</h3>
+                <div class="space-y-4">
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Quy mô</div>
+                    <div class="font-medium">{{ company.size }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Ngành</div>
+                    <div class="font-medium">{{ company.industry }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Quốc gia</div>
+                    <div class="font-medium">Việt Nam</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Năm thành lập</div>
+                    <div class="font-medium">{{ company.founded }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Doanh thu</div>
+                    <div class="font-medium">{{ company.revenue }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Giờ làm việc</div>
+                    <div class="font-medium">{{ company.workingTime }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Location -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-bold mb-4">Địa chỉ</h3>
+                <p class="text-gray-600 mb-4">{{ company.address }}</p>
+                <div class="h-40 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <span class="text-gray-400">Bản đồ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Jobs Tab -->
+          <div v-show="activeTab === 'jobs'" class="space-y-4">
+            <h2 class="text-xl font-bold mb-6">Việc làm tại {{ company.name }}</h2>
+            <div v-for="job in jobs" :key="job.id" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-orange-600 text-lg font-bold flex-shrink-0">
+                  💼
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span v-if="job.featured" class="px-2 py-0.5 bg-gradient-to-r from-[#f26b38] to-[#e05a27] text-white text-xs rounded-full">Nổi bật</span>
+                  </div>
+                  <h3 class="text-lg font-medium hover:text-[#f26b38]">{{ job.title }}</h3>
+                  <div class="flex flex-wrap gap-3 text-sm text-gray-600 mt-2">
+                    <span>📍 {{ job.location }}</span>
+                    <span>💰 {{ job.salary }}</span>
+                    <span>💼 {{ job.type }} • {{ job.level }}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2 mt-3">
+                    <span v-for="tag in job.tags" :key="tag" class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+                <router-link :to="`/jobs/${job.id}`" class="px-4 py-2 bg-[#f26b38] hover:bg-[#e05a27] text-white rounded-lg text-sm font-medium">
+                  Xem chi tiết
+                </router-link>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Photos Tab -->
+          <div v-show="activeTab === 'photos'" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div v-for="(photo, index) in photos" :key="index" class="aspect-video rounded-lg overflow-hidden">
+              <img :src="photo" :alt="`Photo ${index + 1}`" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+            </div>
+          </div>
+          
+          <!-- Reviews Tab -->
+          <div v-show="activeTab === 'reviews'" class="text-center py-12">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-4xl">💬</span>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Chưa có đánh giá</h3>
+            <p class="text-gray-600">Hãy là người đầu tiên đánh giá công ty này!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Footer />
   </div>
 </template>
-
-<style scoped>
-.company-detail {
-  padding: 2rem 0;
-}
-
-.loading,
-.not-found {
-  text-align: center;
-  padding: 4rem;
-  color: #6b7280;
-}
-
-.not-found h2 {
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
-.company-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.company-info {
-  display: flex;
-  gap: 2rem;
-}
-
-.company-logo {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  background: #e5e7eb;
-  padding: 1rem;
-}
-
-.company-details h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2.5rem;
-}
-
-.industry {
-  margin: 0 0 1rem 0;
-  color: #6b7280;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.company-meta {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.size,
-.location {
-  background: #f3f4f6;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.website a {
-  color: #667eea;
-  text-decoration: none;
-}
-
-.website a:hover {
-  text-decoration: underline;
-}
-
-.company-actions {
-  display: flex;
-  gap: 1rem;
-  flex-direction: column;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-}
-
-.btn-primary {
-  background-color: #667eea;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #5a67d8;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-}
-
-.btn-outline:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.details-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 3rem;
-  margin-bottom: 4rem;
-}
-
-.detail-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.detail-section h3 {
-  margin: 0 0 1.5rem 0;
-  color: #1f2937;
-  font-size: 1.25rem;
-}
-
-.content p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  color: #6b7280;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.info-item strong {
-  color: #374151;
-  font-weight: 600;
-}
-
-.info-item span {
-  color: #6b7280;
-}
-
-.culture-section,
-.benefits-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  margin-bottom: 3rem;
-}
-
-.culture-section h3,
-.benefits-section h3 {
-  margin: 0 0 2rem 0;
-  color: #1f2937;
-  font-size: 1.25rem;
-}
-
-.culture-grid,
-.benefits-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.culture-item,
-.benefit-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: #f9fafb;
-  border-radius: 0.375rem;
-}
-
-.culture-icon,
-.benefit-icon {
-  font-size: 1.25rem;
-}
-
-.culture-text,
-.benefit-text {
-  color: #374151;
-  font-weight: 500;
-}
-
-.jobs-section {
-  margin-bottom: 4rem;
-}
-
-.jobs-section h3 {
-  margin: 0 0 2rem 0;
-  color: #1f2937;
-  font-size: 1.25rem;
-}
-
-.jobs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.job-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-
-.job-card:hover {
-  transform: translateY(-5px);
-}
-
-.job-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.job-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-.salary {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-weight: 600;
-}
-
-.job-meta {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.type,
-.experience,
-.location {
-  background: #f3f4f6;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.job-description {
-  color: #6b7280;
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-.job-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.view-all-jobs {
-  text-align: center;
-  padding: 2rem;
-}
-
-@media (max-width: 768px) {
-  .company-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .details-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .culture-grid,
-  .benefits-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

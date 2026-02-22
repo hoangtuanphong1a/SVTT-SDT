@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { store } from '../../store'
-import api from '../../services/api'
+import axios from 'axios'
 
 const jobs = ref([])
 const isLoading = ref(false)
@@ -13,13 +12,19 @@ const loadJobs = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const response = await api.get('/admin/jobs', {
-      params: {
-        q: searchQuery.value,
-        status: selectedStatus.value
-      }
+    const token = localStorage.getItem('token')
+    const params = {}
+    if (searchQuery.value) params.q = searchQuery.value
+    if (selectedStatus.value) params.status = selectedStatus.value
+    
+    const response = await axios.get('http://localhost:8080/api/admin/jobs', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
     })
-    jobs.value = response.data
+    
+    if (response.data && response.data.data) {
+      jobs.value = response.data.data.jobs || []
+    }
   } catch (err) {
     console.error('Error loading jobs:', err)
     error.value = 'Tải danh sách việc làm thất bại. Vui lòng thử lại.'
@@ -28,24 +33,31 @@ const loadJobs = async () => {
   }
 }
 
-const updateJobStatus = async (jobId, status) => {
+const approveJob = async (jobId) => {
   try {
-    await api.put(`/admin/jobs/${jobId}/status`, { status })
-    const job = jobs.value.find(j => j.id === jobId)
-    if (job) {
-      job.status = status
-      job.statusLabel = status === 'approved' ? 'Đã duyệt' : status === 'pending' ? 'Chờ duyệt' : 'Bị từ chối'
-    }
-    store.addNotification({
-      type: 'success',
-      message: 'Cập nhật trạng thái việc làm thành công!'
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/jobs/${jobId}/approve`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadJobs()
+    alert('Duyệt tin tuyển dụng thành công!')
   } catch (err) {
-    console.error('Error updating job status:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Cập nhật trạng thái việc làm thất bại. Vui lòng thử lại.'
+    console.error('Error approving job:', err)
+    alert('Duyệt tin tuyển dụng thất bại.')
+  }
+}
+
+const rejectJob = async (jobId) => {
+  try {
+    const token = localStorage.getItem('token')
+    await axios.put(`http://localhost:8080/api/admin/jobs/${jobId}/reject`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    loadJobs()
+    alert('Từ chối tin tuyển dụng thành công!')
+  } catch (err) {
+    console.error('Error rejecting job:', err)
+    alert('Từ chối tin tuyển dụng thất bại.')
   }
 }
 
@@ -53,20 +65,16 @@ const deleteJob = async (jobId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa việc làm này không?')) {
     return
   }
-
   try {
-    await api.delete(`/admin/jobs/${jobId}`)
-    jobs.value = jobs.value.filter(job => job.id !== jobId)
-    store.addNotification({
-      type: 'success',
-      message: 'Xóa việc làm thành công!'
+    const token = localStorage.getItem('token')
+    await axios.delete(`http://localhost:8080/api/admin/jobs/${jobId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    jobs.value = jobs.value.filter(j => j.id !== jobId)
+    alert('Xóa việc làm thành công!')
   } catch (err) {
     console.error('Error deleting job:', err)
-    store.addNotification({
-      type: 'error',
-      message: 'Xóa việc làm thất bại. Vui lòng thử lại.'
-    })
+    alert('Xóa việc làm thất bại.')
   }
 }
 
@@ -164,9 +172,9 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="job.status === 'pending'" class="job-actions-bottom">
-            <button @click="updateJobStatus(job.id, 'approved')" class="btn btn-primary">Duyệt</button>
-            <button @click="updateJobStatus(job.id, 'rejected')" class="btn btn-danger">Từ chối</button>
+          <div v-if="job.isActive === false" class="job-actions-bottom">
+            <button @click="approveJob(job.id)" class="btn btn-primary">Duyệt</button>
+            <button @click="deleteJob(job.id)" class="btn btn-danger">Xóa</button>
           </div>
         </div>
       </div>
