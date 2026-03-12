@@ -141,7 +141,7 @@ onMounted(() => {
                 <h4>{{ post.title }}</h4>
                 <p class="post-author">Tác giả: {{ post.author }}</p>
                 <p class="post-meta">{{ post.category }} • {{ new Date(post.createdAt).toLocaleDateString('vi-VN') }}</p>
-                <span class="post-status" :class="post.status">{{ post.statusLabel }}</span>
+                <span class="post-status" :class="post.status">{{ post.status === 'draft' ? 'Nháp' : post.status === 'published' ? 'Đã đăng' : 'Bị từ chối' }}</span>
               </div>
             </div>
             <div class="post-actions">

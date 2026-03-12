@@ -89,6 +89,10 @@ const getRoleLabel = (role) => {
   return labels[role] || role
 }
 
+const getStatusLabel = (isActive) => {
+  return isActive ? 'Đang hoạt động' : 'Đã khóa'
+}
+
 const searchUsers = () => {
   loadUsers()
 }
@@ -151,11 +155,11 @@ onMounted(() => {
               <div class="user-details">
                 <h4>{{ user.fullName }}</h4>
                 <p class="user-email">{{ user.email }}</p>
-                <span class="user-role" :class="user.role">{{ user.roleLabel }}</span>
+                <span class="user-role" :class="user.role">{{ getRoleLabel(user.role) }}</span>
               </div>
             </div>
             <div class="user-actions">
-              <button class="btn btn-outline">Xem chi tiết</button>
+              <router-link :to="`/admin/users/${user.id}/profile`" class="btn btn-outline">Xem chi tiết</router-link>
               <button @click="deleteUser(user.id)" class="btn btn-danger">Xóa</button>
             </div>
           </div>

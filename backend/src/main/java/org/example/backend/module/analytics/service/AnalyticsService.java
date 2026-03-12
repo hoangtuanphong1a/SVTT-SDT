@@ -7,9 +7,11 @@ import org.example.backend.module.auth.repository.UserRepository;
 import org.example.backend.module.company.repository.CompanyRepository;
 import org.example.backend.module.cv.repository.CVRepository;
 import org.example.backend.module.job.repository.JobRepository;
+import org.example.backend.module.savedjob.repository.SavedJobRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,6 +23,7 @@ public class AnalyticsService {
     private final JobApplicationRepository applicationRepository;
     private final CompanyRepository companyRepository;
     private final CVRepository cvRepository;
+    private final SavedJobRepository savedJobRepository;
     
     public AdminDashboardResponse getAdminDashboardStats() {
         long totalUsers = userRepository.count();
@@ -56,6 +59,29 @@ public class AnalyticsService {
                 .totalApplications(totalApplications)
                 .totalCompanies(totalCompanies)
                 .totalCVs(totalCVs)
+                // Additional fields expected by frontend
+                .activeUsers(totalUsers) // For now, all users are considered active
+                .pendingCompanies(0L) // No pending companies logic implemented yet
+                .recentActivity(List.of(
+                    AdminDashboardResponse.ActivityItem.builder()
+                        .icon("👥")
+                        .title("Người dùng mới")
+                        .description("Có " + totalUsers + " người dùng đã đăng ký")
+                        .time("Hôm nay")
+                        .build(),
+                    AdminDashboardResponse.ActivityItem.builder()
+                        .icon("🏢")
+                        .title("Công ty mới")
+                        .description("Có " + totalCompanies + " công ty đã đăng ký")
+                        .time("Hôm nay")
+                        .build(),
+                    AdminDashboardResponse.ActivityItem.builder()
+                        .icon("💼")
+                        .title("Việc làm mới")
+                        .description("Có " + totalJobs + " việc làm mới được đăng")
+                        .time("Hôm nay")
+                        .build()
+                ))
                 .usersByRole(usersByRole)
                 .jobsByType(jobsByType)
                 .applicationsByStatus(applicationsByStatus)
@@ -88,7 +114,7 @@ public class AnalyticsService {
         
         long totalApplications = applicationRepository.findByUserIdOrderByCreatedAtDesc(userId).size();
         long pendingApplications = 0L;
-        long savedJobs = 0L;
+        long savedJobs = savedJobRepository.countByUserId(userId);
         long cvCount = cvRepository.countByUserId(userId);
         
         stats.put("totalApplications", totalApplications);

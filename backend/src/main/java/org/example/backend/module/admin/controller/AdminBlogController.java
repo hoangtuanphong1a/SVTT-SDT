@@ -49,7 +49,8 @@ public class AdminBlogController {
         
         // Filter by status
         if (status != null && !status.isEmpty()) {
-            filteredPosts.removeIf(p -> !p.get("status").equals(status));
+            String statusFilter = status.toLowerCase();
+            filteredPosts.removeIf(p -> !p.get("status").toString().toLowerCase().equals(statusFilter));
         }
         
         // Filter by search query

@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +46,9 @@ public class AdminUserController {
         // Filter by role if provided
         List<User> filteredUsers = usersPage.getContent();
         if (role != null && !role.isEmpty()) {
+            String roleFilter = role.toUpperCase();
             filteredUsers = filteredUsers.stream()
-                .filter(u -> u.getRole().name().equalsIgnoreCase(role))
+                .filter(u -> u.getRole().name().equalsIgnoreCase(roleFilter))
                 .collect(Collectors.toList());
         }
         
@@ -105,5 +107,27 @@ public class AdminUserController {
                 return ResponseEntity.ok(ApiResponse.success("Mở khóa người dùng thành công", updated));
             })
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<User>> getProfile() {
+        // This endpoint should be secured by JWT filter
+        // For now, return a sample admin profile
+        User admin = new User();
+        admin.setId(1L);
+        admin.setFullName("Admin User");
+        admin.setEmail("admin@example.com");
+        admin.setPhone("0123456789");
+        admin.setPosition("Administrator");
+        admin.setDepartment("System Administration");
+        admin.setAvatar("https://via.placeholder.com/128");
+        return ResponseEntity.ok(ApiResponse.success(admin));
+    }
+    
+    @PostMapping("/profile/avatar")
+    public ResponseEntity<ApiResponse<String>> uploadAvatar(@RequestParam("avatar") MultipartFile file) {
+        // This endpoint should be secured by JWT filter
+        // For now, return a sample response
+        return ResponseEntity.ok(ApiResponse.success("Avatar uploaded successfully"));
     }
 }

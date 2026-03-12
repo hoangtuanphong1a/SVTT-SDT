@@ -51,4 +51,16 @@ public class User extends BaseEntity {
     
     @Column(name = "otp_expiry")
     private LocalDateTime otpExpiry;
+    
+    @Column(name = "phone")
+    private String phone;
+    
+    @Column(name = "position")
+    private String position;
+    
+    @Column(name = "department")
+    private String department;
+    
+    @Column(name = "avatar")
+    private String avatar;
 }

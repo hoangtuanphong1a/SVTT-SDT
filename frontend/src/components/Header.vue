@@ -67,7 +67,7 @@ const profileDropdownItems = computed(() => {
     ]
   } else if (role === 'ADMIN') {
     return [
-      { label: 'Quản lý cá nhân', route: '/admin/dashboard', icon: '👤' },
+      { label: 'Quản lý cá nhân', route: '/admin/profile', icon: '👤' },
       { label: 'Dashboard', route: '/admin/dashboard', icon: '📊' },
       { label: 'Quản lý người dùng', route: '/admin/users', icon: '👥' },
       { label: 'Quản lý việc làm', route: '/admin/jobs', icon: '💼' },

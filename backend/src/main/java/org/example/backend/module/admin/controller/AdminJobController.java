@@ -36,10 +36,19 @@ public class AdminJobController {
         // Filter by status if provided
         List<Job> filteredJobs = jobsPage.getContent();
         if (status != null && !status.isEmpty()) {
-            boolean isActive = "active".equalsIgnoreCase(status);
-            filteredJobs = filteredJobs.stream()
-                .filter(j -> j.getIsActive() == isActive)
-                .collect(Collectors.toList());
+            if ("pending".equalsIgnoreCase(status)) {
+                filteredJobs = filteredJobs.stream()
+                    .filter(j -> j.getIsActive() == false)
+                    .collect(Collectors.toList());
+            } else if ("approved".equalsIgnoreCase(status)) {
+                filteredJobs = filteredJobs.stream()
+                    .filter(j -> j.getIsActive() == true)
+                    .collect(Collectors.toList());
+            } else if ("rejected".equalsIgnoreCase(status)) {
+                filteredJobs = filteredJobs.stream()
+                    .filter(j -> j.getIsActive() == false)
+                    .collect(Collectors.toList());
+            }
         }
         
         // Filter by search query

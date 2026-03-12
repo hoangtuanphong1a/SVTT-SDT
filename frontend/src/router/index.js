@@ -284,6 +284,18 @@ const routes = [
     component: BlogAdmin,
     meta: { requiresAuth: true, requiresRole: 'ADMIN' }
   },
+  {
+    path: '/admin/users/:id/profile',
+    name: 'AdminUserProfile',
+    component: () => import('@/views/admin/UserProfile.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
+  {
+    path: '/admin/profile',
+    name: 'AdminProfile',
+    component: () => import('@/views/admin/AdminProfile.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ADMIN' }
+  },
 
   // ===== 404 =====
   {

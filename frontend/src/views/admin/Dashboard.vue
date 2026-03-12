@@ -34,6 +34,17 @@ const loadStats = async () => {
         pendingCompanies: data.pendingCompanies || 0,
         recentActivity: data.recentActivity || []
       }
+    } else if (response.data) {
+      // Handle case where data is directly in response.data
+      stats.value = {
+        totalUsers: response.data.totalUsers || 0,
+        totalCompanies: response.data.totalCompanies || 0,
+        totalJobs: response.data.totalJobs || 0,
+        totalApplications: response.data.totalApplications || 0,
+        activeUsers: response.data.activeUsers || 0,
+        pendingCompanies: response.data.pendingCompanies || 0,
+        recentActivity: response.data.recentActivity || []
+      }
     }
   } catch (err) {
     console.error('Error loading stats:', err)
@@ -122,10 +133,10 @@ onMounted(() => {
               </div>
             </router-link>
 
-            <router-link to="/admin/reports" class="action-card">
+            <router-link to="/admin/analytics" class="action-card">
               <div class="action-icon">📊</div>
               <div class="action-info">
-                <h4>Báo cáo</h4>
+                <h4>Thống kê</h4>
                 <p>Xem báo cáo thống kê</p>
               </div>
             </router-link>

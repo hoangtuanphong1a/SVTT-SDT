@@ -36,10 +36,19 @@ public class AdminCompanyController {
         // Filter by status if provided
         List<Company> filteredCompanies = companiesPage.getContent();
         if (status != null && !status.isEmpty()) {
-            boolean isActive = "active".equalsIgnoreCase(status);
-            filteredCompanies = filteredCompanies.stream()
-                .filter(c -> c.getIsActive() == isActive)
-                .collect(Collectors.toList());
+            if ("pending".equalsIgnoreCase(status)) {
+                filteredCompanies = filteredCompanies.stream()
+                    .filter(c -> c.getIsActive() == false && c.getIsVerified() == false)
+                    .collect(Collectors.toList());
+            } else if ("approved".equalsIgnoreCase(status)) {
+                filteredCompanies = filteredCompanies.stream()
+                    .filter(c -> c.getIsActive() == true && c.getIsVerified() == true)
+                    .collect(Collectors.toList());
+            } else if ("rejected".equalsIgnoreCase(status)) {
+                filteredCompanies = filteredCompanies.stream()
+                    .filter(c -> c.getIsActive() == false && c.getIsVerified() == false)
+                    .collect(Collectors.toList());
+            }
         }
         
         // Filter by search query

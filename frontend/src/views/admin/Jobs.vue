@@ -141,7 +141,7 @@ onMounted(() => {
                 <h4>{{ job.title }}</h4>
                 <p class="job-company">{{ job.companyName }}</p>
                 <p class="job-meta">{{ job.type }} • {{ job.location }} • {{ job.salary }}</p>
-                <span class="job-status" :class="job.status">{{ job.statusLabel }}</span>
+                <span class="job-status" :class="job.status">{{ job.status === 'pending' ? 'Chờ duyệt' : job.status === 'approved' ? 'Đã duyệt' : 'Bị từ chối' }}</span>
               </div>
             </div>
             <div class="job-actions">
@@ -172,9 +172,9 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="job.isActive === false" class="job-actions-bottom">
+          <div v-if="job.status === 'pending'" class="job-actions-bottom">
             <button @click="approveJob(job.id)" class="btn btn-primary">Duyệt</button>
-            <button @click="deleteJob(job.id)" class="btn btn-danger">Xóa</button>
+            <button @click="rejectJob(job.id)" class="btn btn-danger">Từ chối</button>
           </div>
         </div>
       </div>

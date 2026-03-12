@@ -155,7 +155,7 @@ onMounted(() => {
                 <h4>{{ company.name }}</h4>
                 <p class="company-email">{{ company.email }}</p>
                 <p class="company-contact">Người liên hệ: {{ company.contactPerson }}</p>
-                <span class="company-status" :class="company.status">{{ company.statusLabel }}</span>
+                <span class="company-status" :class="company.status">{{ company.status === 'pending' ? 'Chờ duyệt' : company.status === 'approved' ? 'Đã duyệt' : 'Bị từ chối' }}</span>
               </div>
             </div>
             <div class="company-actions">
@@ -187,8 +187,8 @@ onMounted(() => {
           </div>
 
           <div v-if="company.status === 'pending'" class="company-actions-bottom">
-            <button @click="updateCompanyStatus(company.id, 'approved')" class="btn btn-primary">Duyệt</button>
-            <button @click="updateCompanyStatus(company.id, 'rejected')" class="btn btn-danger">Từ chối</button>
+            <button @click="verifyCompany(company.id)" class="btn btn-primary">Duyệt</button>
+            <button @click="deleteCompany(company.id)" class="btn btn-danger">Xóa</button>
           </div>
         </div>
       </div>
