@@ -1,38 +1,50 @@
-# vue-project
+# Frontend - Vue 3 Example
 
-This template should help get you started developing with Vue 3 in Vite.
+Dự án frontend mẫu dựa trên Vue 3 Enterprise Boilerplate. Chỉ giữ lại các file ví dụ.
 
-## Recommended IDE Setup
+## Cấu trúc
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```
+src/
+├── apis/blog/          # Ví dụ API Blog (api, service, types, query-keys)
+├── config/             # Axios, env
+├── constants/          # Routes, constants
+├── layouts/            # Master layout (sidebar, header, content)
+├── modules/
+│   ├── home/           # Trang chủ
+│   ├── blog/           # Trang Blog + Blog Detail + composable useBlogQuery
+│   └── exception/      # 404 Not Found
+├── router/             # Vue Router
+├── services/           # Http wrapper
+├── stores/             # Pinia stores (trống)
+└── types/              # TypeScript types
 ```
 
-### Compile and Hot-Reload for Development
+## Các trang ví dụ
 
-```sh
+- **Trang chủ** (`/`) - Giới thiệu và điều hướng
+- **Blog** (`/blog`) - Danh sách bài viết (gọi API với TanStack Query)
+- **Blog Detail** (`/blog/:id`) - Chi tiết bài viết
+
+## Làm việc với API
+
+Ví dụ trong `src/apis/blog/`:
+
+1. **blog-type.ts** - Định nghĩa interface BlogPost
+2. **blog-api.ts** - Gọi HTTP (hỗ trợ MOCK_API)
+3. **blog-service.ts** - Xử lý response
+4. **query-keys.ts** - TanStack Query keys
+5. **useBlogQuery.ts** - Composable dùng useQuery
+
+## Chạy dự án
+
+```bash
+npm install
 npm run dev
 ```
 
-### Compile and Minify for Production
+## Cấu hình (.env)
 
-```sh
-npm run build
-```
+- `APP_BASE_PATH` - Base path (mặc định "/")
+- `BASE_API_URL` - URL API backend
+- `MOCK_API` - "true" để dùng dữ liệu mock (không cần backend)
